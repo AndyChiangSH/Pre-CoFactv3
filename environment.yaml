@@ -1,4 +1,4 @@
-name: pre_cofactv2
+name: pre_cofactv3
 channels:
   - pytorch
   - conda-forge
@@ -90,4 +90,3 @@ dependencies:
     - tqdm==4.64.1
     - transformers==4.24.0
     - urllib3==1.26.12
-prefix: /home/yao/anaconda3/envs/pre_cofactv2
