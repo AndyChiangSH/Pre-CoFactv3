@@ -78,11 +78,11 @@ class MultiModalDataset(Dataset):
         evidence_qas = ""
         for i in range(len(questions)):
             if i == 0:
-                claim_qas += str(questions[i]) + " [SEP] " + str(claim_answers[i])
-                evidence_qas += str(questions[i]) + " [SEP] " + str(evidence_answers[i])
+                claim_qas += str(claim_answers[i])
+                evidence_qas += str(evidence_answers[i])
             else:
-                claim_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(claim_answers[i])
-                evidence_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(evidence_answers[i])
+                claim_qas += " [SEP] " + str(claim_answers[i])
+                evidence_qas += " [SEP] " + str(evidence_answers[i])
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
         return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
@@ -96,18 +96,18 @@ def save(model, config, epoch=None):
     if epoch is None:
         model_name = output_folder_name + 'model'
         # vit_model_name = output_folder_name + 'vitmodel'
-        config_name = output_folder_name + 'config'
+        config_name = output_folder_name + 'config' + ".yaml"
     else:
         model_name = output_folder_name + 'model_' + str(epoch)
         # vit_model_name = output_folder_name + str(epoch) + 'vitmodel'
-        config_name = output_folder_name + 'config_' + str(epoch)
+        config_name = output_folder_name + 'config_' + str(epoch) + ".yaml"
     
     print(f"Save model to {model_name}")
     torch.save(model.state_dict(), model_name)
     # torch.save(vit_model.state_dict(), vit_model_name)
     print(f"Save config to {config_name}")
     with open(config_name, 'w') as config_file:
-        config_file.write(str(config))
+        yaml.dump(config, config_file)
 
 
 if __name__ == '__main__':
@@ -174,10 +174,11 @@ if __name__ == '__main__':
 
     # training
     pbar = tqdm(range(config['epochs']), desc='Epoch: ')
+    best_val_f1, best_val_accurancy = 0, 0
     step = 0
     for epoch in pbar:
         fake_net.train()
-        total_loss, total_ce, total_scl, best_val_f1, best_val_accurancy = 0, 0, 0, 0, 0
+        total_loss, total_ce, total_scl = 0, 0, 0
         for loader_idx, item in enumerate(train_dataloader): 
             fake_net_optimizer.zero_grad()
             # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
