@@ -78,11 +78,11 @@ class MultiModalDataset(Dataset):
         evidence_qas = ""
         for i in range(len(questions)):
             if i == 0:
-                claim_qas += str(claim_answers[i])
-                evidence_qas += str(evidence_answers[i])
+                claim_qas += str(questions[i]) + " [ANS] " + str(claim_answers[i])
+                evidence_qas += str(questions[i]) + " [ANS] " + str(evidence_answers[i])
             else:
-                claim_qas += " [SEP] " + str(claim_answers[i])
-                evidence_qas += " [SEP] " + str(evidence_answers[i])
+                claim_qas += " [SEP] " + str(questions[i]) + " [ANS] " + str(claim_answers[i])
+                evidence_qas += " [SEP] " + str(questions[i]) + " [ANS] " + str(evidence_answers[i])
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
         return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
@@ -122,6 +122,7 @@ if __name__ == '__main__':
 
     # load pretrained NLP model
     deberta_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
+    deberta_tokenizer.add_special_tokens(["[ANS]"])
     deberta = AutoModel.from_pretrained(config['pretrained_text'])
     if config['freeze_text']:
         for name, param in deberta.named_parameters():
@@ -174,11 +175,11 @@ if __name__ == '__main__':
 
     # training
     pbar = tqdm(range(config['epochs']), desc='Epoch: ')
-    best_val_f1, best_val_accurancy = 0, 0
+    best_val_f1, best_val_accurancy = 0.0, 0.0
     step = 0
     for epoch in pbar:
         fake_net.train()
-        total_loss, total_ce, total_scl = 0, 0, 0
+        total_loss, total_ce, total_scl = 0.0, 0.0, 0.0
         for loader_idx, item in enumerate(train_dataloader): 
             fake_net_optimizer.zero_grad()
             # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
@@ -252,7 +253,7 @@ if __name__ == '__main__':
             #     break
 
         # print(f'total loss: {round(total_loss/len(train_dataloader), 4)} | ce: {round(total_ce/len(train_dataloader), 4)} | scl: {round(total_scl/len(train_dataloader), 4)}')
-        print(f"[Train] Epoch: {epoch}, Total loss: {round(total_loss/len(train_dataloader), 5)}")
+        print(f"[Train] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}")
 
         del claim_texts, evidence_texts, labels, input_claim_texts, output_claim_texts, input_evidence_texts, output_evidence_texts, input_claim_qas, output_claim_qas, input_evidence_qas, output_evidence_qas, predicted_output, loss
         gc.collect()
@@ -266,7 +267,7 @@ if __name__ == '__main__':
             with torch.no_grad():
                 y_pred, y_true = [], []
                 fake_net.eval(), deberta.eval()
-                for loader_idx, item in tqdm(enumerate(val_dataloader), total=len(val_dataloader)):
+                for loader_idx, item in enumerate(val_dataloader):
                     # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
                     claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], torch.tensor(item[4]).to(device)                    
                     
@@ -316,6 +317,6 @@ if __name__ == '__main__':
                     record_file.write(f"{epoch},{round(total_loss/len(train_dataloader), 5)},{f1},{accuracy}\n")
 
     config['total_loss'] = total_loss
-    config['best_val_f1'] = best_val_f1
-    config['best_val_accurancy'] = best_val_accurancy
+    config['best_val_f1'] = float(best_val_f1)
+    config['best_val_accurancy'] = float(best_val_accurancy)
     save(fake_net, config)
