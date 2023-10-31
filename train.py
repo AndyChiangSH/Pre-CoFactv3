@@ -16,7 +16,9 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision.models as models
 from torchvision import transforms
 from pytorch_metric_learning import losses
+
 import json
+from torch.utils.tensorboard import SummaryWriter
 
 from model import FakeNet
 
@@ -166,9 +168,13 @@ if __name__ == '__main__':
         os.makedirs(config['output_folder_name'])
     with open(config['output_folder_name'] + 'record.csv', 'w') as record_file:
         record_file.write("epoch,total loss,F1,accuracy")
+        
+    # Tensorboard
+    writer = SummaryWriter(config['output_folder_name'])
 
     # training
     pbar = tqdm(range(config['epochs']), desc='Epoch: ')
+    step = 0
     for epoch in pbar:
         fake_net.train()
         total_loss, best_val_f1, total_ce, total_scl = 0, 0, 0, 0
@@ -236,12 +242,16 @@ if __name__ == '__main__':
             # total_scl += scl_loss.item()
 
             pbar.set_description(f"Loss: {round(current_loss, 3)}", refresh=True)
+            
+            # Tensorboard
+            writer.add_scalar('Train/loss-step', round(current_loss, 3), step)
+            step += 1
 
             # if loader_idx == 2:
             #     break
 
         # print(f'total loss: {round(total_loss/len(train_dataloader), 4)} | ce: {round(total_ce/len(train_dataloader), 4)} | scl: {round(total_scl/len(train_dataloader), 4)}')
-        print(f'Total loss: {round(total_loss/len(train_dataloader), 4)}')
+        print(f"[Train] Epoch: {epoch}, Total loss: {round(total_loss/len(train_dataloader), 5)}")
 
         del claim_texts, evidence_texts, questions, claim_answers, evidence_answers, labels, input_claim_texts, output_claim_texts, input_evidence_texts, output_evidence_texts, input_claim_qas, output_claim_qas, input_evidence_qas, output_evidence_qas, predicted_output, loss
         gc.collect()
@@ -295,7 +305,12 @@ if __name__ == '__main__':
                 with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
                     record_file.write(f"{epoch},{round(total_loss/len(train_dataloader), 5)},{f1},{accuracy}\n")
                     
-                print(f"Epoch: {epoch}, Total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}, Accuracy: {accuracy}")
+                print(f"[Val] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}, accuracy: {accuracy}")
+                
+                # Tensorboard
+                writer.add_scalar('Val/total_loss-epoch', round(total_loss/len(train_dataloader), 5), epoch)
+                writer.add_scalar('Val/F1-epoch', f1, epoch)
+                writer.add_scalar('Val/accuracy-epoch', accuracy, epoch)
 
     config['total_loss'] = total_loss
     config['val_f1'] = best_val_f1
