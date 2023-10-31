@@ -177,7 +177,7 @@ if __name__ == '__main__':
     step = 0
     for epoch in pbar:
         fake_net.train()
-        total_loss, best_val_f1, total_ce, total_scl = 0, 0, 0, 0
+        total_loss, total_ce, total_scl, best_val_f1, best_val_accurancy = 0, 0, 0, 0, 0
         for loader_idx, item in enumerate(train_dataloader): 
             fake_net_optimizer.zero_grad()
             # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
@@ -295,10 +295,12 @@ if __name__ == '__main__':
 
                 # evaluate
                 f1 = round(f1_score(y_true, y_pred, average='weighted'), 5)
-                accuracy = round(accuracy_score(y_true, y_pred), 5)
-
-                if f1 >= best_val_f1:
+                if f1 > best_val_f1:
                     best_val_f1 = f1
+                    
+                accuracy = round(accuracy_score(y_true, y_pred), 5)
+                if accuracy > best_val_accurancy:
+                    best_val_accurancy = accuracy
                 
                 # save model and record
                 save(fake_net, config, epoch=epoch)
@@ -313,5 +315,6 @@ if __name__ == '__main__':
                 writer.add_scalar('Val/accuracy-epoch', accuracy, epoch)
 
     config['total_loss'] = total_loss
-    config['val_f1'] = best_val_f1
+    config['best_val_f1'] = best_val_f1
+    config['best_val_accurancy'] = best_val_accurancy
     save(fake_net, config)
