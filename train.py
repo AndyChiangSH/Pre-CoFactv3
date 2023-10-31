@@ -81,8 +81,8 @@ class MultiModalDataset(Dataset):
                 claim_qas += str(questions[i]) + " [ANS] " + str(claim_answers[i])
                 evidence_qas += str(questions[i]) + " [ANS] " + str(evidence_answers[i])
             else:
-                claim_qas += " [SEP] " + str(questions[i]) + " [ANS] " + str(claim_answers[i])
-                evidence_qas += " [SEP] " + str(questions[i]) + " [ANS] " + str(evidence_answers[i])
+                claim_qas += " [QUS] " + str(questions[i]) + " [ANS] " + str(claim_answers[i])
+                evidence_qas += " [QUS] " + str(questions[i]) + " [ANS] " + str(evidence_answers[i])
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
         return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     # load pretrained NLP model
     deberta_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
-    deberta_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]']})
+    deberta_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]', '[QUS]']})
     
     deberta = AutoModel.from_pretrained(config['pretrained_text'])
     deberta.resize_token_embeddings(len(deberta_tokenizer))
