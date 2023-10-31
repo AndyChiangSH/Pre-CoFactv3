@@ -9,7 +9,7 @@ from tqdm import tqdm
 from transformers import ViTModel, Swinv2Model
 from transformers import AutoTokenizer, AutoModel
 from transformers import AdamW, get_scheduler
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, accuracy_score
 from PIL import Image
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -147,9 +147,12 @@ if __name__ == '__main__':
 
     scheduler = get_scheduler("linear", fake_net_optimizer, num_warmup_steps=int(config['epochs']*len(train_dataloader)*0.1), num_training_steps=config['epochs']*len(train_dataloader))
 
-    print(f"{sum(p.numel() for p in deberta.parameters() if p.requires_grad)}")
+    print(f"deberta.parameters: {sum(p.numel() for p in deberta.parameters() if p.requires_grad)}")
     # print(f"{sum(p.numel() for p in vit_model.parameters() if p.requires_grad)}")
-    print(f"{sum(p.numel() for p in fake_net.parameters() if p.requires_grad)}")
+    print(f"fake_net.parameters: {sum(p.numel() for p in fake_net.parameters() if p.requires_grad)}")
+    
+    with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
+        record_file.write("epoch,total loss,F1,accuracy")
 
     # training
     pbar = tqdm(range(config['epochs']), desc='Epoch: ')
@@ -231,7 +234,7 @@ if __name__ == '__main__':
         with torch.cuda.device(f"cuda:{config['device']}"):
             torch.cuda.empty_cache()
         # save(fake_net, vit_model, config, epoch=epoch)
-        save(fake_net, config, epoch=epoch)
+        # save(fake_net, config, epoch=epoch)
 
         if epoch % config['eval_per_epochs'] == 0:
             # testing
@@ -286,16 +289,19 @@ if __name__ == '__main__':
                         y_pred += predicted_labels.cpu().detach().flatten().tolist()
                         y_true += labels.tolist()
 
+                # evaluate
                 f1 = round(f1_score(y_true, y_pred, average='weighted'), 5)
+                accuracy = round(accuracy_score(y_true, y_pred), 5)
 
                 if f1 >= best_val_f1:
                     best_val_f1 = f1
-                    save(fake_net, config, epoch=epoch)
-
-                print(f"Epoch: {epoch}, Total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}")
-                with open(config['output_folder_name'] + 'record', 'a') as config_file:
-                    config_file.write(str(epoch) + ',' + str(round(total_loss/len(train_dataloader), 5)) + ',' + str(f1))
-                    config_file.write('\n')
+                
+                # save model and record
+                save(fake_net, config, epoch=epoch)
+                with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
+                    record_file.write(f"{epoch},{round(total_loss/len(train_dataloader), 5)},{f1},{accuracy}\n")
+                    
+                print(f"Epoch: {epoch}, Total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}, Accuracy: {accuracy}")
 
     config['total_loss'] = total_loss
     config['val_f1'] = best_val_f1
