@@ -122,8 +122,10 @@ if __name__ == '__main__':
 
     # load pretrained NLP model
     deberta_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
-    deberta_tokenizer.add_special_tokens(["[ANS]"])
+    deberta_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]']})
+    
     deberta = AutoModel.from_pretrained(config['pretrained_text'])
+    deberta.resize_token_embeddings(len(deberta_tokenizer))
     if config['freeze_text']:
         for name, param in deberta.named_parameters():
             param.requires_grad = False
