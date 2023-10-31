@@ -78,11 +78,11 @@ class MultiModalDataset(Dataset):
         evidence_qas = ""
         for i in range(len(questions)):
             if i == 0:
-                claim_qas += str(questions[i]) + " " + str(claim_answers[i])
-                evidence_qas += str(questions[i]) + " " + str(evidence_answers[i])
+                claim_qas += str(questions[i]) + " [SEP] " + str(claim_answers[i])
+                evidence_qas += str(questions[i]) + " [SEP] " + str(evidence_answers[i])
             else:
-                claim_qas += " [SEP] " + str(questions[i]) + " " + str(claim_answers[i])
-                evidence_qas += " [SEP] " + str(questions[i]) + " " + str(evidence_answers[i])
+                claim_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(claim_answers[i])
+                evidence_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(evidence_answers[i])
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
         return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     if not os.path.exists(config['output_folder_name']):
         os.makedirs(config['output_folder_name'])
     with open(config['output_folder_name'] + 'record.csv', 'w') as record_file:
-        record_file.write("epoch,total loss,F1,accuracy")
+        record_file.write("epoch,total loss,F1,accuracy\n")
         
     # Tensorboard
     writer = SummaryWriter(config['output_folder_name'])
@@ -253,7 +253,7 @@ if __name__ == '__main__':
         # print(f'total loss: {round(total_loss/len(train_dataloader), 4)} | ce: {round(total_ce/len(train_dataloader), 4)} | scl: {round(total_scl/len(train_dataloader), 4)}')
         print(f"[Train] Epoch: {epoch}, Total loss: {round(total_loss/len(train_dataloader), 5)}")
 
-        del claim_texts, evidence_texts, questions, claim_answers, evidence_answers, labels, input_claim_texts, output_claim_texts, input_evidence_texts, output_evidence_texts, input_claim_qas, output_claim_qas, input_evidence_qas, output_evidence_qas, predicted_output, loss
+        del claim_texts, evidence_texts, labels, input_claim_texts, output_claim_texts, input_evidence_texts, output_evidence_texts, input_claim_qas, output_claim_qas, input_evidence_qas, output_evidence_qas, predicted_output, loss
         gc.collect()
         with torch.cuda.device(f"cuda:{config['device']}"):
             torch.cuda.empty_cache()
@@ -301,18 +301,18 @@ if __name__ == '__main__':
                 accuracy = round(accuracy_score(y_true, y_pred), 5)
                 if accuracy > best_val_accurancy:
                     best_val_accurancy = accuracy
+                    
+                # Tensorboard
+                writer.add_scalar('Val/total_loss-epoch', round(total_loss/len(train_dataloader), 5), epoch)
+                writer.add_scalar('Val/F1-epoch', f1, epoch)
+                writer.add_scalar('Val/accuracy-epoch', accuracy, epoch)
+                
+                print(f"[Val] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}, accuracy: {accuracy}")
                 
                 # save model and record
                 save(fake_net, config, epoch=epoch)
                 with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
                     record_file.write(f"{epoch},{round(total_loss/len(train_dataloader), 5)},{f1},{accuracy}\n")
-                    
-                print(f"[Val] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}, accuracy: {accuracy}")
-                
-                # Tensorboard
-                writer.add_scalar('Val/total_loss-epoch', round(total_loss/len(train_dataloader), 5), epoch)
-                writer.add_scalar('Val/F1-epoch', f1, epoch)
-                writer.add_scalar('Val/accuracy-epoch', accuracy, epoch)
 
     config['total_loss'] = total_loss
     config['best_val_f1'] = best_val_f1
