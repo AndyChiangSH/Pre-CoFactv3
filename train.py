@@ -71,8 +71,19 @@ class MultiModalDataset(Dataset):
         # claim_texts, claim_image, document_text, document_image, category, claim_ocr, document_ocr, add_feature = self.data[idx]
         id, claim_id, claim, evidence, questions, claim_answers, evidence_answers, label = self.data[idx]["id"], self.data[idx]["claim_id"], self.data[idx]["claim"], self.data[idx]["evidence"], self.data[idx]["question"], self.data[idx]["claim_answer"], self.data[idx]["evidence_answer"], self.data[idx]["label"]
         
+        # question + answer
+        claim_qas = ""
+        evidence_qas = ""
+        for i in range(len(questions)):
+            if i == 0:
+                claim_qas += str(questions[i]) + " " + str(claim_answers[i])
+                evidence_qas += str(questions[i]) + " " + str(evidence_answers[i])
+            else:
+                claim_qas += " [SEP] " + str(questions[i]) + " " + str(claim_answers[i])
+                evidence_qas += " [SEP] " + str(questions[i]) + " " + str(evidence_answers[i])
+
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
-        return (id, claim_id, claim, evidence, questions, claim_answers, evidence_answers, labels_dict[label])
+        return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
 
 
 def save(model, config, epoch=None):
@@ -151,7 +162,9 @@ if __name__ == '__main__':
     # print(f"{sum(p.numel() for p in vit_model.parameters() if p.requires_grad)}")
     print(f"fake_net.parameters: {sum(p.numel() for p in fake_net.parameters() if p.requires_grad)}")
     
-    with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
+    if not os.path.exists(config['output_folder_name']):
+        os.makedirs(config['output_folder_name'])
+    with open(config['output_folder_name'] + 'record.csv', 'w') as record_file:
         record_file.write("epoch,total loss,F1,accuracy")
 
     # training
@@ -162,27 +175,28 @@ if __name__ == '__main__':
         for loader_idx, item in enumerate(train_dataloader): 
             fake_net_optimizer.zero_grad()
             # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
-            claim_texts, evidence_texts, questions, claim_answers, evidence_answers, labels = list(item[2]), list(item[3]), list(item[4]), list(item[5]), list(item[6]), torch.tensor(item[7]).to(device)
+            claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], torch.tensor(item[4]).to(device)
+            # print(claim_texts, evidence_texts, claim_qas, evidence_qas, labels)
             
-            # question + answer
-            claim_qas = list()
-            evidence_qas = list()
-            for i in range(len(questions)):
-                question = questions[i]
-                claim_answer = claim_answers[i]
-                evidence_answer = evidence_answers[i]
-                claim_qas_str = ""
-                evidence_qas_str = ""
-                for j in range(len(question)):
-                    if j == 0:
-                        claim_qas_str += str(question[j]) + " " + str(claim_answer[j])
-                        evidence_qas_str += str(question[j]) + " " + str(evidence_answer[j])
-                    else:
-                        claim_qas_str += "[SEP]" + str(question[j]) + " " + str(claim_answer[j])
-                        evidence_qas_str += "[SEP]" + str(question[j]) + " " + str(evidence_answer[j])
+            # # question + answer
+            # claim_qas = list()
+            # evidence_qas = list()
+            # for i in range(len(questions)):
+            #     question = questions[i]
+            #     claim_answer = claim_answers[i]
+            #     evidence_answer = evidence_answers[i]
+            #     claim_qas_str = ""
+            #     evidence_qas_str = ""
+            #     for j in range(len(question)):
+            #         if j == 0:
+            #             claim_qas_str += str(question[j]) + " " + str(claim_answer[j])
+            #             evidence_qas_str += str(question[j]) + " " + str(evidence_answer[j])
+            #         else:
+            #             claim_qas_str += "[SEP]" + str(question[j]) + " " + str(claim_answer[j])
+            #             evidence_qas_str += "[SEP]" + str(question[j]) + " " + str(evidence_answer[j])
                         
-                claim_qas.append(claim_qas_str)
-                evidence_qas.append(evidence_qas_str)
+            #     claim_qas.append(claim_qas_str)
+            #     evidence_qas.append(evidence_qas_str)
                 
             # transform sentences to embeddings via DeBERTa
             input_claim_texts = deberta_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
@@ -243,27 +257,7 @@ if __name__ == '__main__':
                 fake_net.eval(), deberta.eval()
                 for loader_idx, item in tqdm(enumerate(val_dataloader), total=len(val_dataloader)):
                     # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
-                    claim_texts, evidence_texts, questions, claim_answers, evidence_answers, labels = list(item[2]), list(item[3]), list(item[4]), list(item[5]), list(item[6]), torch.tensor(item[7]).to(device)
-
-                    # question + answer
-                    claim_qas = list()
-                    evidence_qas = list()
-                    for i in range(len(questions)):
-                        question = questions[i]
-                        claim_answer = claim_answers[i]
-                        evidence_answer = evidence_answers[i]
-                        claim_qas_str = ""
-                        evidence_qas_str = ""
-                        for j in range(len(question)):
-                            if j == 0:
-                                claim_qas_str += str(question[j]) + " " + str(claim_answer[j])
-                                evidence_qas_str += str(question[j]) + " " + str(evidence_answer[j])
-                            else:
-                                claim_qas_str += "[SEP]" + str(question[j]) + " " + str(claim_answer[j])
-                                evidence_qas_str += "[SEP]" + str(question[j]) + " " + str(evidence_answer[j])
-                                
-                        claim_qas.append(claim_qas_str)
-                        evidence_qas.append(evidence_qas_str)
+                    claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], torch.tensor(item[4]).to(device)                    
                     
                     # transform sentences to embeddings via DeBERTa
                     input_claim_texts = deberta_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
