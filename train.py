@@ -78,11 +78,11 @@ class MultiModalDataset(Dataset):
         evidence_qas = ""
         for i in range(len(questions)):
             if i == 0:
-                claim_qas += str(questions[i]) + " [ANS] " + str(claim_answers[i])
-                evidence_qas += str(questions[i]) + " [ANS] " + str(evidence_answers[i])
+                claim_qas += str(questions[i]) + " [SEP] " + str(claim_answers[i])
+                evidence_qas += str(questions[i]) + " [SEP] " + str(evidence_answers[i])
             else:
-                claim_qas += " [QUS] " + str(questions[i]) + " [ANS] " + str(claim_answers[i])
-                evidence_qas += " [QUS] " + str(questions[i]) + " [ANS] " + str(evidence_answers[i])
+                claim_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(claim_answers[i])
+                evidence_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(evidence_answers[i])
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
         return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
@@ -121,13 +121,13 @@ if __name__ == '__main__':
     print(f"Start training {config['output_folder_name']}...")
 
     # load pretrained NLP model
-    deberta_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
-    deberta_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]', '[QUS]']})
+    text_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
+    # text_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]', '[QUS]']})
     
-    deberta = AutoModel.from_pretrained(config['pretrained_text'])
-    deberta.resize_token_embeddings(len(deberta_tokenizer))
+    text_model = AutoModel.from_pretrained(config['pretrained_text'])
+    # text_model.resize_token_embeddings(len(text_tokenizer))
     if config['freeze_text']:
-        for name, param in deberta.named_parameters():
+        for name, param in text_model.named_parameters():
             param.requires_grad = False
             # if 'adapter' not in name:
             #     param.requires_grad = False
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     # device = torch.device("cpu")
     # loss_func = losses.SupConLoss().to(device)
 
-    deberta.to(device)
+    text_model.to(device)
     # vit_model.to(device)
     fake_net.to(device)
     criterion.to(device)
@@ -163,7 +163,7 @@ if __name__ == '__main__':
 
     scheduler = get_scheduler("linear", fake_net_optimizer, num_warmup_steps=int(config['epochs']*len(train_dataloader)*0.1), num_training_steps=config['epochs']*len(train_dataloader))
 
-    print(f"deberta.parameters: {sum(p.numel() for p in deberta.parameters() if p.requires_grad)}")
+    print(f"text_model.parameters: {sum(p.numel() for p in text_model.parameters() if p.requires_grad)}")
     # print(f"{sum(p.numel() for p in vit_model.parameters() if p.requires_grad)}")
     print(f"fake_net.parameters: {sum(p.numel() for p in fake_net.parameters() if p.requires_grad)}")
     
@@ -209,23 +209,23 @@ if __name__ == '__main__':
             #     evidence_qas.append(evidence_qas_str)
                 
             # transform sentences to embeddings via DeBERTa
-            input_claim_texts = deberta_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_claim_texts = deberta(**input_claim_texts).last_hidden_state
+            input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+            output_claim_texts = text_model(**input_claim_texts).last_hidden_state
 
-            input_evidence_texts = deberta_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_evidence_texts = deberta(**input_evidence_texts).last_hidden_state
+            input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+            output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state
             
-            input_claim_qas = deberta_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_claim_qas = deberta(**input_claim_qas).last_hidden_state
+            input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+            output_claim_qas = text_model(**input_claim_qas).last_hidden_state
 
-            input_evidence_qas = deberta_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_evidence_qas = deberta(**input_evidence_qas).last_hidden_state
+            input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+            output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state
 
-            # input_claim_ocr = deberta_tokenizer(claim_ocr, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            # output_claim_ocr = deberta(**input_claim_ocr).last_hidden_state
+            # input_claim_ocr = text_tokenizer(claim_ocr, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+            # output_claim_ocr = text_model(**input_claim_ocr).last_hidden_state
 
-            # input_document_ocr = deberta_tokenizer(document_ocr, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            # output_document_ocr = deberta(**input_document_ocr).last_hidden_state
+            # input_document_ocr = text_tokenizer(document_ocr, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+            # output_document_ocr = text_model(**input_document_ocr).last_hidden_state
 
             # output_claim_image = vit_model(claim_image).last_hidden_state
             # output_document_image = vit_model(document_image).last_hidden_state
@@ -268,23 +268,23 @@ if __name__ == '__main__':
             # testing
             with torch.no_grad():
                 y_pred, y_true = [], []
-                fake_net.eval(), deberta.eval()
+                fake_net.eval(), text_model.eval()
                 for loader_idx, item in enumerate(val_dataloader):
                     # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
                     claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], torch.tensor(item[4]).to(device)                    
                     
                     # transform sentences to embeddings via DeBERTa
-                    input_claim_texts = deberta_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_claim_texts = deberta(**input_claim_texts).last_hidden_state
+                    input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+                    output_claim_texts = text_model(**input_claim_texts).last_hidden_state
 
-                    input_evidence_texts = deberta_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_evidence_texts = deberta(**input_evidence_texts).last_hidden_state
+                    input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+                    output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state
                     
-                    input_claim_qas = deberta_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_claim_qas = deberta(**input_claim_qas).last_hidden_state
+                    input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+                    output_claim_qas = text_model(**input_claim_qas).last_hidden_state
 
-                    input_evidence_qas = deberta_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_evidence_qas = deberta(**input_evidence_qas).last_hidden_state
+                    input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
+                    output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state
 
                     predicted_output, concat_embeddings = fake_net(output_claim_texts, output_evidence_texts, output_claim_qas, output_evidence_qas)
                                        
@@ -318,6 +318,9 @@ if __name__ == '__main__':
                 with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
                     record_file.write(f"{epoch},{round(total_loss/len(train_dataloader), 5)},{f1},{accuracy}\n")
 
+
+    print(f"best_val_f1: {float(best_val_f1)}")
+    print(f"best_val_accurancy: {float(best_val_accurancy)}")
     config['total_loss'] = total_loss
     config['best_val_f1'] = float(best_val_f1)
     config['best_val_accurancy'] = float(best_val_accurancy)

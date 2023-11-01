@@ -28,17 +28,6 @@ class FakeNet(nn.Module):
         )
         
         self.claim_qa_embedding = nn.Sequential(
-            nn.Linear(config['text_dim'], config['hidden_dim']),
-            # Mish()
-            nn.ReLU()
-        )
-        self.evidence_qa_embedding = nn.Sequential(
-            nn.Linear(config['text_dim'], config['hidden_dim']),
-            # Mish()
-            nn.ReLU()
-        )
-
-        self.qa_embedding = nn.Sequential(
             nn.Linear(config['qa_dim'], config['hidden_dim']),
             # Mish()
             nn.ReLU()
