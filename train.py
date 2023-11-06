@@ -6,7 +6,7 @@ import os
 import gc
 import yaml
 from tqdm import tqdm
-from transformers import ViTModel, Swinv2Model
+# from transformers import ViTModel, Swinv2Model
 from transformers import AutoTokenizer, AutoModel
 from transformers import AdamW, get_scheduler
 from sklearn.metrics import f1_score, accuracy_score
@@ -19,6 +19,7 @@ from pytorch_metric_learning import losses
 
 import json
 from torch.utils.tensorboard import SummaryWriter
+# from transformers import LlamaTokenizer
 
 from model import FakeNet
 
@@ -123,6 +124,7 @@ if __name__ == '__main__':
     # load pretrained NLP model
     text_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
     # text_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]', '[QUS]']})
+    text_tokenizer.pad_token = text_tokenizer.eos_token
     
     text_model = AutoModel.from_pretrained(config['pretrained_text'])
     # text_model.resize_token_embeddings(len(text_tokenizer))
@@ -146,12 +148,14 @@ if __name__ == '__main__':
     criterion = torch.nn.CrossEntropyLoss()
     fake_net_optimizer = AdamW(fake_net.parameters(), lr=config['lr'])
 
-    device = torch.device(f"cuda:{config['device']}" if torch.cuda.is_available() else "cpu")
+    device = torch.device(f"cuda:{config['device']}" if torch.cuda.is_available() and bool(config['gpu']) else "cpu")
     print("device:", device)
+    text_model_device = torch.device(f"cuda:{config['device']}" if torch.cuda.is_available() and bool(config['text_model_gpu']) else "cpu")
+    print("text_model_device:", text_model_device)
     # device = torch.device("cpu")
     # loss_func = losses.SupConLoss().to(device)
 
-    text_model.to(device)
+    text_model.to(text_model_device)
     # vit_model.to(device)
     fake_net.to(device)
     criterion.to(device)
@@ -209,17 +213,17 @@ if __name__ == '__main__':
             #     evidence_qas.append(evidence_qas_str)
                 
             # transform sentences to embeddings via DeBERTa
-            input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_claim_texts = text_model(**input_claim_texts).last_hidden_state
+            input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+            output_claim_texts = text_model(**input_claim_texts).last_hidden_state.to(device)
 
-            input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state
+            input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+            output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state.to(device)
             
-            input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_claim_qas = text_model(**input_claim_qas).last_hidden_state
+            input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+            output_claim_qas = text_model(**input_claim_qas).last_hidden_state.to(device)
 
-            input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-            output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state
+            input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+            output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state.to(device)
 
             # input_claim_ocr = text_tokenizer(claim_ocr, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
             # output_claim_ocr = text_model(**input_claim_ocr).last_hidden_state
@@ -274,17 +278,17 @@ if __name__ == '__main__':
                     claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], torch.tensor(item[4]).to(device)                    
                     
                     # transform sentences to embeddings via DeBERTa
-                    input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_claim_texts = text_model(**input_claim_texts).last_hidden_state
+                    input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+                    output_claim_texts = text_model(**input_claim_texts).last_hidden_state.to(device)
 
-                    input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state
+                    input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+                    output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state.to(device)
                     
-                    input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_claim_qas = text_model(**input_claim_qas).last_hidden_state
+                    input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+                    output_claim_qas = text_model(**input_claim_qas).last_hidden_state.to(device)
 
-                    input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
-                    output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state
+                    input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
+                    output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state.to(device)
 
                     predicted_output, concat_embeddings = fake_net(output_claim_texts, output_evidence_texts, output_claim_qas, output_evidence_qas)
                                        
