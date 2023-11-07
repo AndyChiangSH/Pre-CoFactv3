@@ -22,6 +22,7 @@ device: "1"
 # pretrained_text: "EleutherAI/gpt-j-6b"
 # pretrained_text: "gpt2"
 pretrained_text: "bert-large-uncased"
+# pretrained_text: "google/flan-t5-large"
 # pretrained_image:" microsoft/swinv2-base-patch4-window8-256"
 eval_per_epochs: 1
 freeze_text: 1

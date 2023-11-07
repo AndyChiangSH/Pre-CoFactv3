@@ -53,7 +53,7 @@ def set_seed(seed_value):
 
 
 class MultiModalDataset(Dataset):
-    def __init__(self, mode='train'):
+    def __init__(self, mode='train', sep_token="[SEP]"):
         super().__init__()
 
         # with open('../data/processed_{}.pickle'.format(mode), 'rb') as f:
@@ -63,6 +63,8 @@ class MultiModalDataset(Dataset):
         print(f"Load data from {data_path}...")
         with open(f"./data/{mode}.json", 'r') as f:
             self.data = json.load(f)
+            
+        self.sep_token = " " + sep_token + " "
 
     def __len__(self):
         return len(self.data)
@@ -79,11 +81,11 @@ class MultiModalDataset(Dataset):
         evidence_qas = ""
         for i in range(len(questions)):
             if i == 0:
-                claim_qas += str(questions[i]) + " [SEP] " + str(claim_answers[i])
-                evidence_qas += str(questions[i]) + " [SEP] " + str(evidence_answers[i])
+                claim_qas += str(questions[i]) + self.sep_token + str(claim_answers[i])
+                evidence_qas += str(questions[i]) + self.sep_token + str(evidence_answers[i])
             else:
-                claim_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(claim_answers[i])
-                evidence_qas += " [SEP] " + str(questions[i]) + " [SEP] " + str(evidence_answers[i])
+                claim_qas += self.sep_token + str(questions[i]) + self.sep_token + str(claim_answers[i])
+                evidence_qas += self.sep_token + str(questions[i]) + self.sep_token + str(evidence_answers[i])
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
         return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
@@ -125,7 +127,7 @@ if __name__ == '__main__':
     text_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
     # text_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]', '[QUS]']})
     # text_tokenizer.pad_token = text_tokenizer.eos_token
-    text_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+    # text_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
     
     text_model = AutoModel.from_pretrained(config['pretrained_text'])
     # text_model.resize_token_embeddings(len(text_tokenizer))
@@ -161,10 +163,10 @@ if __name__ == '__main__':
     fake_net.to(device)
     criterion.to(device)
 
-    train_dataset = MultiModalDataset(mode='train')
-    train_dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, num_workers=8, collate_fn=lambda x: tuple(zip(*x)))
-    val_dataset = MultiModalDataset(mode='val')
-    val_dataloader = DataLoader(val_dataset, batch_size=8, shuffle=False, num_workers=8, collate_fn=lambda x: tuple(zip(*x)))
+    train_dataset = MultiModalDataset(mode='train', sep_token=text_tokenizer.sep_token)
+    train_dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, num_workers=8)
+    val_dataset = MultiModalDataset(mode='val', sep_token=text_tokenizer.sep_token)
+    val_dataloader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=False, num_workers=8)
 
     scheduler = get_scheduler("linear", fake_net_optimizer, num_warmup_steps=int(config['epochs']*len(train_dataloader)*0.1), num_training_steps=config['epochs']*len(train_dataloader))
 
