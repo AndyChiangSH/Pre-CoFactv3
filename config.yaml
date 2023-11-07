@@ -3,11 +3,11 @@ batch_size: 24
 # batch_size: 1
 lr: 0.00005
 # epochs: 15
-epochs: 30
+epochs: 20
 # text_dim: 1024
-text_dim: 768
+text_dim: 1024
 # qa_dim: 1024
-qa_dim: 768
+qa_dim: 1024
 hidden_dim: 256
 # hidden_dim: 512
 head: 2
@@ -18,9 +18,10 @@ device: "1"
 # pretrained_text: "microsoft/deberta-xlarge"
 # pretrained_text: "microsoft/deberta-v2-xlarge"
 # pretrained_text: "microsoft/deberta-v3-large"
-# pretrained_text: "EleutherAI/gpt-j-6b"
-pretrained_text: "gpt2"
 # pretrained_text: "meta-llama/Llama-2-7b-hf"
+# pretrained_text: "EleutherAI/gpt-j-6b"
+# pretrained_text: "gpt2"
+pretrained_text: "bert-large-uncased"
 # pretrained_image:" microsoft/swinv2-base-patch4-window8-256"
 eval_per_epochs: 1
 freeze_text: 1
