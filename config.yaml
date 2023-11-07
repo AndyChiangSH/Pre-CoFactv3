@@ -3,7 +3,7 @@ batch_size: 24
 # batch_size: 1
 lr: 0.00005
 # epochs: 15
-epochs: 10
+epochs: 30
 # text_dim: 1024
 text_dim: 768
 # qa_dim: 1024
