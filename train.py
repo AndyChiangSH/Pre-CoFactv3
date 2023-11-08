@@ -263,7 +263,7 @@ if __name__ == '__main__':
             #     break
 
         # print(f'total loss: {round(total_loss/len(train_dataloader), 4)} | ce: {round(total_ce/len(train_dataloader), 4)} | scl: {round(total_scl/len(train_dataloader), 4)}')
-        print(f"[Train] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}")
+        print(f"\n[Train] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}")
 
         del claim_texts, evidence_texts, labels, input_claim_texts, output_claim_texts, input_evidence_texts, output_evidence_texts, input_claim_qas, output_claim_qas, input_evidence_qas, output_evidence_qas, predicted_output, loss
         gc.collect()
@@ -336,7 +336,7 @@ if __name__ == '__main__':
                 writer.add_scalar('Val/F1-epoch', f1, epoch)
                 writer.add_scalar('Val/accuracy-epoch', accuracy, epoch)
                 
-                print(f"[Val] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}, accuracy: {accuracy}")
+                print(f"\n[Val] epoch: {epoch}, total loss: {round(total_loss/len(train_dataloader), 5)}, F1: {f1}, accuracy: {accuracy}")
                 
                 # save model and record
                 config['val_f1'] = float(f1)
