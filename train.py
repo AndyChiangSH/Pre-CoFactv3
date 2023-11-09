@@ -155,6 +155,12 @@ if __name__ == '__main__':
 
     criterion = torch.nn.CrossEntropyLoss()
     fake_net_optimizer = AdamW(fake_net.parameters(), lr=config['lr'])
+    
+    if torch.cuda.is_available():
+        print('CUDNN VERSION:', torch.backends.cudnn.version())
+        print('Number CUDA Devices:', torch.cuda.device_count())
+        print('CUDA Device Name:',torch.cuda.get_device_name(0))
+        print('CUDA Device Total Memory [GB]:',torch.cuda.get_device_properties(0).total_memory/1e9)
 
     device = torch.device(f"cuda:{config['device']}" if torch.cuda.is_available() and bool(config['gpu']) else "cpu")
     print("device:", device)
@@ -190,10 +196,10 @@ if __name__ == '__main__':
     # training
     best_val_f1, best_val_accurancy = 0.0, 0.0
     step = 0
-    for epoch in tqdm(range(config['epochs']), desc='Epoch: '):
+    for epoch in tqdm(range(config['epochs']), desc='Epoch: ', position=0):
         fake_net.train()
         total_loss, total_ce, total_scl = 0.0, 0.0, 0.0
-        for loader_idx, item in tqdm(enumerate(train_dataloader), total=len(train_dataloader), desc='Step: '):
+        for loader_idx, item in tqdm(enumerate(train_dataloader), total=len(train_dataloader), desc='Step: ', position=1):
             fake_net_optimizer.zero_grad()
             # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
             claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], item[4].clone().detach().to(device)
@@ -277,7 +283,7 @@ if __name__ == '__main__':
             with torch.no_grad():
                 y_pred, y_true = [], []
                 fake_net.eval(), text_model.eval()
-                for loader_idx, item in tqdm(enumerate(val_dataloader), total=len(val_dataloader), desc='Step: '):
+                for loader_idx, item in tqdm(enumerate(val_dataloader), total=len(val_dataloader), desc='Step: ', position=1):
                     # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
                     claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], item[4].clone().detach().to(device)
                     
