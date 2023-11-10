@@ -124,6 +124,9 @@ if __name__ == '__main__':
     set_seed(config['seed_value'])
     
     print(f"Start training {config['output_folder_name']}...")
+    
+    # clean GPU memory
+    torch.cuda.empty_cache()
 
     # load pretrained NLP model
     text_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
@@ -135,9 +138,6 @@ if __name__ == '__main__':
     print("text_tokenizer.pad_token:", text_tokenizer.pad_token)
     print("text_tokenizer.sep_token:", text_tokenizer.sep_token)
     # print("text_tokenizer.all_special_tokens:", text_tokenizer.all_special_tokens)
-    
-    # clean GPT memory
-    # torch.cuda.empty_cache()
     
     text_model = AutoModel.from_pretrained(config['pretrained_text'])
     print("text_model:", config['pretrained_text'])

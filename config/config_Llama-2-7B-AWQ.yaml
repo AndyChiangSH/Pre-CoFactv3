@@ -2,8 +2,8 @@ seed_value: 42
 batch_size: 1
 lr: 0.00005
 epochs: 15
-text_dim: 1024
-qa_dim: 1024
+text_dim: 4096
+qa_dim: 4096
 hidden_dim: 256
 head: 2
 dropout: 0.1
@@ -16,4 +16,4 @@ freeze_text: 1
 # freeze_image: 1
 loss_weight: 0.7
 gpu: True
-text_model_gpu: True
+text_model_gpu: False
