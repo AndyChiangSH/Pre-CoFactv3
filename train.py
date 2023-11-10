@@ -131,7 +131,7 @@ if __name__ == '__main__':
     # load pretrained NLP model
     text_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
     # text_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]', '[QUS]']})
-    text_tokenizer.pad_token = text_tokenizer.eos_token
+    # text_tokenizer.pad_token = text_tokenizer.eos_token
     # text_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
     text_tokenizer.sep_token = text_tokenizer.eos_token
     
