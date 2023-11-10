@@ -135,6 +135,7 @@ if __name__ == '__main__':
     # print("text_tokenizer.all_special_tokens:", text_tokenizer.all_special_tokens)
     
     text_model = AutoModel.from_pretrained(config['pretrained_text'])
+    print("text_model:", config['pretrained_text'])
     # text_model.resize_token_embeddings(len(text_tokenizer))
     if config['freeze_text']:
         for name, param in text_model.named_parameters():
@@ -207,33 +208,33 @@ if __name__ == '__main__':
                 
             # transform sentences to embeddings via DeBERTa
             input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-            # output_claim_texts = text_model(**input_claim_texts).last_hidden_state.to(device)
-            output_claim_texts = text_model(
-                input_ids=input_claim_texts.input_ids, 
-                decoder_input_ids=text_model._shift_right(input_claim_texts.input_ids)
-            ).last_hidden_state.to(device)
+            output_claim_texts = text_model(**input_claim_texts).last_hidden_state.to(device)
+            # output_claim_texts = text_model(
+            #     input_ids=input_claim_texts.input_ids, 
+            #     decoder_input_ids=text_model._shift_right(input_claim_texts.input_ids)
+            # ).last_hidden_state.to(device)
 
             input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-            # output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state.to(device)
-            output_evidence_texts = text_model(
-                input_ids=input_evidence_texts.input_ids, 
-                decoder_input_ids=text_model._shift_right(input_evidence_texts.input_ids)
-            ).last_hidden_state.to(device)
+            output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state.to(device)
+            # output_evidence_texts = text_model(
+            #     input_ids=input_evidence_texts.input_ids, 
+            #     decoder_input_ids=text_model._shift_right(input_evidence_texts.input_ids)
+            # ).last_hidden_state.to(device)
             
             input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-            # output_claim_qas = text_model(**input_claim_qas).last_hidden_state.to(device)
-            output_claim_qas = text_model(
-                input_ids=input_claim_qas.input_ids, 
-                decoder_input_ids=text_model._shift_right(input_claim_qas.input_ids)
-            ).last_hidden_state.to(device)
+            output_claim_qas = text_model(**input_claim_qas).last_hidden_state.to(device)
+            # output_claim_qas = text_model(
+            #     input_ids=input_claim_qas.input_ids, 
+            #     decoder_input_ids=text_model._shift_right(input_claim_qas.input_ids)
+            # ).last_hidden_state.to(device)
 
             input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-            # output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state.to(device)
-            output_evidence_qas = text_model(
-                input_ids=input_evidence_qas.input_ids,
-                decoder_input_ids=text_model._shift_right(
-                    input_evidence_qas.input_ids)
-            ).last_hidden_state.to(device)
+            output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state.to(device)
+            # output_evidence_qas = text_model(
+            #     input_ids=input_evidence_qas.input_ids,
+            #     decoder_input_ids=text_model._shift_right(
+            #         input_evidence_qas.input_ids)
+            # ).last_hidden_state.to(device)
 
             # input_claim_ocr = text_tokenizer(claim_ocr, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(device)
             # output_claim_ocr = text_model(**input_claim_ocr).last_hidden_state
@@ -289,33 +290,33 @@ if __name__ == '__main__':
                     
                     # transform sentences to embeddings via DeBERTa
                     input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-                    # output_claim_texts = text_model(**input_claim_texts).last_hidden_state.to(device)
-                    output_claim_texts = text_model(
-                        input_ids=input_claim_texts.input_ids, 
-                        decoder_input_ids=text_model._shift_right(input_claim_texts.input_ids)
-                    ).last_hidden_state.to(device)
+                    output_claim_texts = text_model(**input_claim_texts).last_hidden_state.to(device)
+                    # output_claim_texts = text_model(
+                    #     input_ids=input_claim_texts.input_ids, 
+                    #     decoder_input_ids=text_model._shift_right(input_claim_texts.input_ids)
+                    # ).last_hidden_state.to(device)
 
                     input_evidence_texts = text_tokenizer(evidence_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-                    # output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state.to(device)
-                    output_evidence_texts = text_model(
-                        input_ids=input_evidence_texts.input_ids, 
-                        decoder_input_ids=text_model._shift_right(input_evidence_texts.input_ids)
-                    ).last_hidden_state.to(device)
+                    output_evidence_texts = text_model(**input_evidence_texts).last_hidden_state.to(device)
+                    # output_evidence_texts = text_model(
+                    #     input_ids=input_evidence_texts.input_ids, 
+                    #     decoder_input_ids=text_model._shift_right(input_evidence_texts.input_ids)
+                    # ).last_hidden_state.to(device)
                     
                     input_claim_qas = text_tokenizer(claim_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-                    # output_claim_qas = text_model(**input_claim_qas).last_hidden_state.to(device)
-                    output_claim_qas = text_model(
-                        input_ids=input_claim_qas.input_ids, 
-                        decoder_input_ids=text_model._shift_right(input_claim_qas.input_ids)
-                    ).last_hidden_state.to(device)
+                    output_claim_qas = text_model(**input_claim_qas).last_hidden_state.to(device)
+                    # output_claim_qas = text_model(
+                    #     input_ids=input_claim_qas.input_ids, 
+                    #     decoder_input_ids=text_model._shift_right(input_claim_qas.input_ids)
+                    # ).last_hidden_state.to(device)
 
                     input_evidence_qas = text_tokenizer(evidence_qas, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
-                    # output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state.to(device)
-                    output_evidence_qas = text_model(
-                        input_ids=input_evidence_qas.input_ids,
-                        decoder_input_ids=text_model._shift_right(
-                            input_evidence_qas.input_ids)
-                    ).last_hidden_state.to(device)
+                    output_evidence_qas = text_model(**input_evidence_qas).last_hidden_state.to(device)
+                    # output_evidence_qas = text_model(
+                    #     input_ids=input_evidence_qas.input_ids,
+                    #     decoder_input_ids=text_model._shift_right(
+                    #         input_evidence_qas.input_ids)
+                    # ).last_hidden_state.to(device)
 
                     predicted_output, concat_embeddings = fake_net(output_claim_texts, output_evidence_texts, output_claim_qas, output_evidence_qas)
                                        
