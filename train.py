@@ -28,6 +28,8 @@ transformers_logger = logging.getLogger("transformers")
 transformers_logger.setLevel(logging.ERROR)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb=32"
+
 labels_dict = {
     "Support": 0,
     "Neutral": 1,
@@ -126,13 +128,16 @@ if __name__ == '__main__':
     # load pretrained NLP model
     text_tokenizer = AutoTokenizer.from_pretrained(config['pretrained_text'])
     # text_tokenizer.add_special_tokens({'additional_special_tokens': ['[ANS]', '[QUS]']})
-    # text_tokenizer.pad_token = text_tokenizer.eos_token
+    text_tokenizer.pad_token = text_tokenizer.eos_token
     # text_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
     text_tokenizer.sep_token = text_tokenizer.eos_token
     
     print("text_tokenizer.pad_token:", text_tokenizer.pad_token)
     print("text_tokenizer.sep_token:", text_tokenizer.sep_token)
     # print("text_tokenizer.all_special_tokens:", text_tokenizer.all_special_tokens)
+    
+    # clean GPT memory
+    # torch.cuda.empty_cache()
     
     text_model = AutoModel.from_pretrained(config['pretrained_text'])
     print("text_model:", config['pretrained_text'])
