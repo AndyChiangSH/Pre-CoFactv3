@@ -353,6 +353,9 @@ if __name__ == '__main__':
                 # save model and record
                 config['val_f1'] = float(f1)
                 config['val_accurancy'] = float(accuracy)
+                config['total_loss'] = total_loss
+                config['best_val_f1'] = float(best_val_f1)
+                config['best_val_accurancy'] = float(best_val_accurancy)
                 save(fake_net, config, epoch=epoch)
                 with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
                     record_file.write(f"{epoch},{round(total_loss/len(train_dataloader), 5)},{f1},{accuracy}\n")

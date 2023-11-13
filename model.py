@@ -65,12 +65,33 @@ class FakeNet(nn.Module):
             nn.Linear(32, 16),
             nn.ReLU()
         )
-
-        self.classifier = nn.Sequential(
-            nn.Linear(config['hidden_dim'], 128),
-            nn.ReLU(),
-            nn.Linear(128, 3)
-        )
+        
+        classifier_layer = config.get("classifier_layer", 2)
+        print("classifier_layer:", classifier_layer)
+        if classifier_layer == 2:
+            self.classifier = nn.Sequential(
+                nn.Linear(config['hidden_dim'], 128),
+                nn.ReLU(),
+                nn.Linear(128, 3)
+            )
+        if classifier_layer == 3:
+            self.classifier = nn.Sequential(
+                nn.Linear(config['hidden_dim'], 256),
+                nn.ReLU(),
+                nn.Linear(256, 128),
+                nn.ReLU(),
+                nn.Linear(128, 3)
+            )
+        if classifier_layer == 4:
+            self.classifier = nn.Sequential(
+                nn.Linear(config['hidden_dim'], 512),
+                nn.ReLU(),
+                nn.Linear(512, 256),
+                nn.ReLU(),
+                nn.Linear(256, 128),
+                nn.ReLU(),
+                nn.Linear(128, 3)
+            )
 
     def forward(self, claim_text, evidence_text, claim_qa, evidence_qa):
         # transform to embeddings

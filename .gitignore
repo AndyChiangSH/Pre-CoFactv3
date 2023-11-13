@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 __transformers__/
+model/20231111-040252_deberta-large_hd-1024/model*
+model/20231111-195957_deberta-large_cl-4/model*
