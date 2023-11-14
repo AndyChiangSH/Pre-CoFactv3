@@ -66,6 +66,8 @@ class MultiModalDataset(Dataset):
         with open(f"./data/{mode}.json", 'r') as f:
             self.data = json.load(f)
             
+        print(f"Data length: {len(self.data)}")
+            
         self.sep_token = " " + sep_token + " "
 
     def __len__(self):
