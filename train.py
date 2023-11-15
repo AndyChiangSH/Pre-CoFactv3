@@ -63,7 +63,7 @@ class MultiModalDataset(Dataset):
         
         data_path = f"./data/{mode}.json"
         print(f"Load data from {data_path}...")
-        with open(f"./data/{mode}.json", 'r') as f:
+        with open(data_path, 'r') as f:
             self.data = json.load(f)
             
         print(f"Data length: {len(self.data)}")
