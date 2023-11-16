@@ -19,8 +19,11 @@ if __name__ == '__main__':
     device = torch.device(config['device'] if torch.cuda.is_available() else "cpu")
     print("device:", device)
     
+    print("model:", config["model"])
+    model = AutoModelForQuestionAnswering.from_pretrained(config["model"])
+    tokenizer = AutoTokenizer.from_pretrained(config["model"])
     QA = pipeline("question-answering",
-                  model=config["model"], tokenizer=config["model"], device=device)
+                  model=model, tokenizer=tokenizer, device=device)
     
     new_data = []    
     for i in tqdm(range(len(data))):
@@ -55,7 +58,22 @@ if __name__ == '__main__':
             
         new_data.append(obj)
         
-        # if i == 2:
+        # if i % 300 == 0:
+        #     print("reload!")
+        #     del model, tokenizer, QA
+            
+        #     model = AutoModelForQuestionAnswering.from_pretrained(config["model"])
+        #     tokenizer = AutoTokenizer.from_pretrained(config["model"])
+        #     if str(device) == "cuda:0":
+        #         device = torch.device("cuda:1")
+        #     elif str(device) == "cuda:1":
+        #         device = torch.device("cuda:0")
+            
+        #     print("device:", device)
+        #     QA = pipeline("question-answering",
+        #                 model=model, tokenizer=tokenizer, device=device)
+                
+        # if i == 300:
         #     break
         
     output_folder_path = f"./data/generate_answers/result/{config['model']}"
