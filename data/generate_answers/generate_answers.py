@@ -58,7 +58,7 @@ if __name__ == '__main__':
         # if i == 2:
         #     break
         
-    output_folder_path = f"./data/generate_answers/{config['model']}"
+    output_folder_path = f"./data/generate_answers/result/{config['model']}"
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
