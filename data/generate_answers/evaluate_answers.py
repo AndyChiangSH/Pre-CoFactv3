@@ -5,6 +5,16 @@ from tqdm import tqdm
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 import evaluate
 # from datasets import load_metric
+import matplotlib.pyplot as plt
+
+def draw_hist(data, name):
+    plt.hist(data, color='lightgreen', ec='black', bins=10)
+    plt.title(name)
+    plt.xlabel('score')
+    plt.ylabel('count')
+    # plt.show()
+    plt.savefig(f"{output_folder_path}/{config['mode']}_{name}.jpg")
+    plt.clf()
 
 if __name__ == '__main__':
     with open("./data/generate_answers/config.yaml", "r") as file:
@@ -25,13 +35,16 @@ if __name__ == '__main__':
     print(f"pred_data length: {len(pred_data)}")
     
     # tokenizer = AutoTokenizer.from_pretrained(config["model"])
+    
+    bleu = evaluate.load("bleu")
 
     ref_claim_answer = []
     ref_evidence_answer = []
     pred_claim_answer = []
     pred_evidence_answer = []
-    claim_answer = []
-    evidence_answer = []
+    claim_bleus = []
+    evidence_bleus = []
+    avg_bleus = []
     for i in tqdm(range(len(ref_data))):
         # for j in range(len(ref_data[i]["question"])):
         #     ref_claim_answer.append([ref_data[i]["claim_answer"][j]])
@@ -55,6 +68,33 @@ if __name__ == '__main__':
         ref_evidence_answer += ref_data[i]["evidence_answer"]
         pred_claim_answer += pred_data[i]["claim_answer"]
         pred_evidence_answer += pred_data[i]["evidence_answer"]
+        
+        for j in range(len(ref_data[i]["question"])):
+            try:
+                claim_bleu = bleu.compute(
+                    predictions=[pred_data[i]["claim_answer"][j]],
+                    references=[ref_data[i]["claim_answer"][j]],
+                    # tokenizer=tokenizer,
+                    max_order=2
+                )["bleu"]
+            except:
+                claim_bleu =  0
+            
+            try:
+                evidence_bleu = bleu.compute(
+                    predictions=[pred_data[i]["evidence_answer"][j]],
+                    references=[ref_data[i]["evidence_answer"]],
+                    # tokenizer=tokenizer,
+                    max_order=2
+                )["bleu"]
+            except:
+                evidence_bleu =  0
+            
+            avg_bleu = (claim_bleu + evidence_bleu) / 2
+            
+            claim_bleus.append(claim_bleu)
+            evidence_bleus.append(evidence_bleu)
+            avg_bleus.append(avg_bleu)
 
         # if i == 2:
         #     break
@@ -65,6 +105,18 @@ if __name__ == '__main__':
     # print("pred_evidence_answer:", pred_evidence_answer)
     # print("claim_answer:", claim_answer)
     # print("evidence_answer:", evidence_answer)
+    
+    # print("claim_bleus:", claim_bleus)
+    # print("evidence_bleus:", evidence_bleus)
+    # print("avg_bleus:", avg_bleus)
+    
+    claim_avg_bleu = sum(claim_bleus)/len(claim_bleus)
+    evidence_avg_bleu = sum(evidence_bleus)/len(evidence_bleus)
+    avg_avg_bleu = sum(avg_bleus)/len(avg_bleus)
+    
+    print("claim_avg_bleu:", claim_avg_bleu)
+    print("evidence_avg_bleu:", evidence_avg_bleu)
+    print("avg_avg_bleu:", avg_avg_bleu)
     
     # bleu = evaluate.load("bleu")
     # evidence_result = bleu.compute(evidence_answer)
@@ -77,18 +129,17 @@ if __name__ == '__main__':
     # bleu_evidence.add_batch(predictions=[pred_evidence_answer], references=[ref_evidence_answer])
     # evidence_result = bleu_evidence.compute()
     
-    bleu = evaluate.load("bleu")
     claim_result = bleu.compute(
         predictions=pred_claim_answer,
         references=ref_claim_answer,
         # tokenizer=tokenizer,
-        # max_order=3
+        max_order=2
     )
     evidence_result = bleu.compute(
         predictions=pred_evidence_answer,
         references=ref_evidence_answer,
         # tokenizer=tokenizer,
-        # max_order=3
+        max_order=2
     )
     avg_bleu = (claim_result["bleu"] + evidence_result["bleu"]) / 2
     
@@ -100,6 +151,9 @@ if __name__ == '__main__':
         "claim_result": claim_result,
         "evidence_result": evidence_result,
         "avg_bleu": avg_bleu,
+        "claim_avg_bleu": claim_avg_bleu,
+        "evidence_avg_bleu": evidence_avg_bleu,
+        "avg_avg_bleu": avg_avg_bleu,
     }
     
     output_folder_path = f"./data/generate_answers/evaluate/{config['model']}"
@@ -110,3 +164,7 @@ if __name__ == '__main__':
     print(f"Save data to {save_data_path}...")
     with open(save_data_path, 'w') as f:
         json.dump(output, f, indent=2)
+
+    draw_hist(claim_bleus, 'claim_bleus')
+    draw_hist(evidence_bleus, 'evidence_bleus')
+    draw_hist(avg_bleus, 'avg_bleus')

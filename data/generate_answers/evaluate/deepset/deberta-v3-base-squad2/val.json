@@ -25,5 +25,8 @@
     "translation_length": 25994,
     "reference_length": 31471
   },
-  "avg_bleu": 0.3070298985255168
+  "avg_bleu": 0.3070298985255168,
+  "claim_avg_bleu": 0.10808657704169507,
+  "evidence_avg_bleu": 0.1251935532590946,
+  "avg_avg_bleu": 0.11664006515039424
 }
