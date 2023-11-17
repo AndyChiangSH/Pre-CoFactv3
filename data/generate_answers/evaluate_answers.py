@@ -75,7 +75,7 @@ if __name__ == '__main__':
                     predictions=[pred_data[i]["claim_answer"][j]],
                     references=[ref_data[i]["claim_answer"][j]],
                     # tokenizer=tokenizer,
-                    max_order=2
+                    max_order=config["max_order"]
                 )["bleu"]
             except:
                 claim_bleu =  0
@@ -85,7 +85,7 @@ if __name__ == '__main__':
                     predictions=[pred_data[i]["evidence_answer"][j]],
                     references=[ref_data[i]["evidence_answer"]],
                     # tokenizer=tokenizer,
-                    max_order=2
+                    max_order=config["max_order"]
                 )["bleu"]
             except:
                 evidence_bleu =  0
@@ -133,13 +133,13 @@ if __name__ == '__main__':
         predictions=pred_claim_answer,
         references=ref_claim_answer,
         # tokenizer=tokenizer,
-        max_order=2
+        max_order=config["max_order"]
     )
     evidence_result = bleu.compute(
         predictions=pred_evidence_answer,
         references=ref_evidence_answer,
         # tokenizer=tokenizer,
-        max_order=2
+        max_order=config["max_order"]
     )
     avg_bleu = (claim_result["bleu"] + evidence_result["bleu"]) / 2
     
