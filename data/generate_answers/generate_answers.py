@@ -19,9 +19,14 @@ if __name__ == '__main__':
     device = torch.device(config['device'] if torch.cuda.is_available() else "cpu")
     print("device:", device)
     
-    print("model:", config["model"])
-    model = AutoModelForQuestionAnswering.from_pretrained(config["model"])
-    tokenizer = AutoTokenizer.from_pretrained(config["model"])
+    if config["is_finetune_model"]:
+        model_path = f"./data/generate_answers/{config['model']}"
+    else:
+        model_path = config['model']
+        
+    print("model_path:", config["model_path"])
+    model = AutoModelForQuestionAnswering.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
     QA = pipeline("question-answering",
                   model=model, tokenizer=tokenizer, device=device)
     

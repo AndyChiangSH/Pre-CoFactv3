@@ -163,3 +163,5 @@ __transformers__/
 model/20231111-040252_deberta-large_hd-1024/model*
 model/20231111-195957_deberta-large_cl-4/model*
 model/20231114-204136_deberta-large_big/model*
+data/generate_answers/finetune/
+data/preprocess_train.json
