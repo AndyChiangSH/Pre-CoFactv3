@@ -45,11 +45,11 @@ if __name__ == '__main__':
         }
         
         claim = data[i]["claim"]
-        if len(claim) > 3200:
-            claim = claim[:3200]
+        if len(claim) > config["max_len"]:
+            claim = claim[:config["max_len"]]
         evidence = data[i]["evidence"]
-        if len(evidence) > 3200:
-            evidence = evidence[:3200]
+        if len(evidence) > config["max_len"]:
+            evidence = evidence[:config["max_len"]]
         question = data[i]["question"]
         
         for j in range(len(question)):

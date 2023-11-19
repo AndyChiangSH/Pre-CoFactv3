@@ -9,15 +9,6 @@ from datasets import load_dataset
 import argparse
 
 
-def get_argument():
-    opt = argparse.ArgumentParser()
-    opt.add_argument("--config",
-                     type=str,
-                     help="config path")
-    config = vars(opt.parse_args())
-    return config
-
-
 def preprocess_function(examples):
     # questions = [q.strip() for q in examples["question"]]
     questions = []
@@ -26,10 +17,16 @@ def preprocess_function(examples):
             questions.append(q.strip())
         except:
             questions.append("")
+            
+    contexts = []
+    for c in examples["context"]:
+        if len(c) > config["max_len"]:
+            c = c[:config["max_len"]]
+        contexts.append(c)
         
     inputs = tokenizer(
         questions,
-        examples["context"],
+        contexts,
         max_length=512,
         truncation="only_second",
         return_offsets_mapping=True,
