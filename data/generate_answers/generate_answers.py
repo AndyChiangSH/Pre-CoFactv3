@@ -30,7 +30,8 @@ if __name__ == '__main__':
     QA = pipeline("question-answering",
                   model=model, tokenizer=tokenizer, device=device)
     
-    new_data = []    
+    new_data = []
+      
     for i in tqdm(range(len(data))):
         obj = {
             "id": data[i]["id"],
@@ -44,8 +45,13 @@ if __name__ == '__main__':
         }
         
         claim = data[i]["claim"]
+        if len(claim) > 3200:
+            claim = claim[:3200]
         evidence = data[i]["evidence"]
+        if len(evidence) > 3200:
+            evidence = evidence[:3200]
         question = data[i]["question"]
+        
         for j in range(len(question)):
             QA_input = {
                 'context': claim,

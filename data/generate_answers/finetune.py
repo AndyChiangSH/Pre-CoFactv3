@@ -114,7 +114,7 @@ if __name__ == '__main__':
         config['device'] if torch.cuda.is_available() else "cpu")
     print("device:", device)
     
-    output_folder_path = f"./data/generate_answers/{config['output_model']}"
+    output_folder_path = f"./data/generate_answers/{config['finetune_model']}"
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 

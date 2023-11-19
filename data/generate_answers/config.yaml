@@ -1,8 +1,8 @@
 mode: "val"
-model: "finetune/deepset/roberta-large-squad2"
-output_model: "finetune/deepset/roberta-large-squad2"
+model: "deepset/deberta-v3-base-squad2"
+finetune_model: "finetune/deepset/deberta-v3-base-squad2"
 device: "cuda:0"
-max_order: 4
-epoch: 6
-batch_size: 4
+epoch: 3
+batch_size: 16
 is_finetune_model: True
+max_order: 4
