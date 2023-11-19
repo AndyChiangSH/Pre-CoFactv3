@@ -24,7 +24,7 @@ if __name__ == '__main__':
     else:
         model_path = config['model']
         
-    print("model_path:", config["model_path"])
+    print("model_path:", model_path)
     model = AutoModelForQuestionAnswering.from_pretrained(model_path)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     QA = pipeline("question-answering",

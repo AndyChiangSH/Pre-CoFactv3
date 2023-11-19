@@ -1,5 +1,5 @@
 mode: "val"
-model: "deepset/roberta-large-squad2"
+model: "finetune/deepset/roberta-large-squad2"
 output_model: "finetune/deepset/roberta-large-squad2"
 device: "cuda:0"
 max_order: 4
