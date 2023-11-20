@@ -4,6 +4,6 @@ finetune_model: "finetune/roberta-large"
 device: "cuda:0"
 epoch: 3
 batch_size: 4
-max_len: 32000
+max_len: 3200
 is_finetune_model: True
 max_order: 4

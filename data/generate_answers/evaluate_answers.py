@@ -45,6 +45,7 @@ if __name__ == '__main__':
     claim_bleus = []
     evidence_bleus = []
     avg_bleus = []
+    
     for i in tqdm(range(len(ref_data))):
         # for j in range(len(ref_data[i]["question"])):
         #     ref_claim_answer.append([ref_data[i]["claim_answer"][j]])
@@ -69,32 +70,58 @@ if __name__ == '__main__':
         pred_claim_answer += pred_data[i]["claim_answer"]
         pred_evidence_answer += pred_data[i]["evidence_answer"]
         
-        for j in range(len(ref_data[i]["question"])):
-            try:
-                claim_bleu = bleu.compute(
-                    predictions=[pred_data[i]["claim_answer"][j]],
-                    references=[ref_data[i]["claim_answer"][j]],
-                    # tokenizer=tokenizer,
-                    max_order=config["max_order"]
-                )["bleu"]
-            except:
-                claim_bleu =  0
+        # for j in range(len(ref_data[i]["question"])):
+        #     try:
+        #         claim_bleu = bleu.compute(
+        #             predictions=[pred_data[i]["claim_answer"][j]],
+        #             references=[ref_data[i]["claim_answer"][j]],
+        #             # tokenizer=tokenizer,
+        #             max_order=config["max_order"]
+        #         )["bleu"]
+        #     except:
+        #         claim_bleu =  0
             
-            try:
-                evidence_bleu = bleu.compute(
-                    predictions=[pred_data[i]["evidence_answer"][j]],
-                    references=[ref_data[i]["evidence_answer"]],
-                    # tokenizer=tokenizer,
-                    max_order=config["max_order"]
-                )["bleu"]
-            except:
-                evidence_bleu =  0
+        #     try:
+        #         evidence_bleu = bleu.compute(
+        #             predictions=[pred_data[i]["evidence_answer"][j]],
+        #             references=[ref_data[i]["evidence_answer"][j]],
+        #             # tokenizer=tokenizer,
+        #             max_order=config["max_order"]
+        #         )["bleu"]
+        #     except:
+        #         evidence_bleu =  0
             
-            avg_bleu = (claim_bleu + evidence_bleu) / 2
+        #     avg_bleu = (claim_bleu + evidence_bleu) / 2
             
-            claim_bleus.append(claim_bleu)
-            evidence_bleus.append(evidence_bleu)
-            avg_bleus.append(avg_bleu)
+        #     claim_bleus.append(claim_bleu)
+        #     evidence_bleus.append(evidence_bleu)
+        #     avg_bleus.append(avg_bleu)
+            
+        try:
+            claim_bleu = bleu.compute(
+                predictions=pred_data[i]["claim_answer"],
+                references=ref_data[i]["claim_answer"],
+                # tokenizer=tokenizer,
+                max_order=config["max_order"]
+            )["bleu"]
+        except:
+            claim_bleu =  0
+            
+        try:
+            evidence_bleu = bleu.compute(
+                predictions=pred_data[i]["evidence_answer"],
+                references=ref_data[i]["evidence_answer"],
+                # tokenizer=tokenizer,
+                max_order=config["max_order"]
+            )["bleu"]
+        except:
+            evidence_bleu = 0
+
+        avg_bleu = (claim_bleu + evidence_bleu) / 2
+        
+        claim_bleus.append(claim_bleu)
+        evidence_bleus.append(evidence_bleu)
+        avg_bleus.append(avg_bleu)
 
         # if i == 2:
         #     break
