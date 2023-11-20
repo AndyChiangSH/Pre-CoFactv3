@@ -1,9 +1,9 @@
 mode: "val"
-model: "finetune/microsoft/deberta-v3-large"
-finetune_model: "finetune/microsoft/deberta-v3-large"
+model: "finetune/roberta-large"
+finetune_model: "finetune/roberta-large"
 device: "cuda:0"
 epoch: 3
 batch_size: 4
-max_len: 3200
+max_len: 32000
 is_finetune_model: True
 max_order: 4
