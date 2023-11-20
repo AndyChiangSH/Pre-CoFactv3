@@ -1,9 +1,9 @@
 mode: "val"
-model: "finetune/roberta-large"
-finetune_model: "finetune/roberta-large"
+model: "finetune/t5-base"
+finetune_model: "finetune/t5-base"
 device: "cuda:0"
 epoch: 3
-batch_size: 4
+batch_size: 8
 max_len: 3200
 is_finetune_model: True
 max_order: 4
