@@ -80,6 +80,16 @@ class MultiModalDataset(Dataset):
         # claim_texts, claim_image, document_text, document_image, category, claim_ocr, document_ocr, add_feature = self.data[idx]
         id, claim_id, claim, evidence, questions, claim_answers, evidence_answers, label = self.data[idx]["id"], self.data[idx]["claim_id"], self.data[idx]["claim"], self.data[idx]["evidence"], self.data[idx]["question"], self.data[idx]["claim_answer"], self.data[idx]["evidence_answer"], self.data[idx]["label"]
         
+        # truncate claim and evidence to max_len
+        try:
+            # print("max_len!")
+            if len(claim) > config["max_len"]:
+                claim = claim[:config["max_len"]]
+            if len(evidence) > config["max_len"]:
+                evidence = evidence[:config["max_len"]]
+        except:
+            pass
+        
         # question + answer
         claim_qas = ""
         evidence_qas = ""
