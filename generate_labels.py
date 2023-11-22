@@ -88,7 +88,6 @@ class MultiModalDataset(Dataset):
         
         # truncate claim and evidence to max_len
         try:
-            # print("max_len!")
             if len(claim) > config["max_len"]:
                 claim = claim[:config["max_len"]]
             if len(evidence) > config["max_len"]:
