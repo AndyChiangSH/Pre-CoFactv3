@@ -1,6 +1,8 @@
 batch_size: 24
 best_val_accurancy: 0.75422
 best_val_f1: 0.74867
+best_val_avg: 0.751445
+best_epoch: 10
 device: '1'
 dropout: 0.1
 epochs: 15

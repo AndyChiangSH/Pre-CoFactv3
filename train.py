@@ -212,7 +212,7 @@ if __name__ == '__main__':
     writer = SummaryWriter(config['output_folder_name'])
 
     # training
-    best_val_f1, best_val_accurancy = 0.0, 0.0
+    best_val_f1, best_val_accurancy, best_val_avg, best_epoch = 0.0, 0.0, 0.0, - 1
     step = 0
     for epoch in tqdm(range(config['epochs']), desc='Epoch: ', position=0):
         fake_net.train()
@@ -350,10 +350,16 @@ if __name__ == '__main__':
                 f1 = round(f1_score(y_true, y_pred, average='weighted'), 5)
                 if f1 > best_val_f1:
                     best_val_f1 = f1
+                    best_epoch = epoch
                     
                 accuracy = round(accuracy_score(y_true, y_pred), 5)
                 if accuracy > best_val_accurancy:
                     best_val_accurancy = accuracy
+                    
+                avg = (f1 + accuracy) / 2
+                if avg > best_val_avg:
+                    best_val_avg = avg
+                    best_epoch = epoch
                     
                 # Tensorboard
                 writer.add_scalar('Val/total_loss-epoch', round(total_loss/len(train_dataloader), 5), epoch)
@@ -366,8 +372,6 @@ if __name__ == '__main__':
                 config['val_f1'] = float(f1)
                 config['val_accurancy'] = float(accuracy)
                 config['total_loss'] = total_loss
-                config['best_val_f1'] = float(best_val_f1)
-                config['best_val_accurancy'] = float(best_val_accurancy)
                 save(fake_net, config, epoch=epoch)
                 with open(config['output_folder_name'] + 'record.csv', 'a') as record_file:
                     record_file.write(f"{epoch},{round(total_loss/len(train_dataloader), 5)},{f1},{accuracy}\n")
@@ -375,7 +379,10 @@ if __name__ == '__main__':
 
     print(f"best_val_f1: {float(best_val_f1)}")
     print(f"best_val_accurancy: {float(best_val_accurancy)}")
+    print(f"best_epoch: {best_epoch}")
     config['total_loss'] = total_loss
     config['best_val_f1'] = float(best_val_f1)
     config['best_val_accurancy'] = float(best_val_accurancy)
+    config['best_val_avg'] = float(best_val_avg)
+    config['best_epoch'] = best_epoch
     save(fake_net, config)
