@@ -62,21 +62,23 @@ class FakeNet(nn.Module):
         )
 
         self.feature_embedding = nn.Sequential(
-            nn.Linear(32, 16),
+            nn.Linear(config["features_num"], 32),
             nn.ReLU()
         )
+        
+        feature_embedding_len = config.get("feature_embedding_len", 0)
         
         classifier_layer = config.get("classifier_layer", 2)
         print("classifier_layer:", classifier_layer)
         if classifier_layer == 2:
             self.classifier = nn.Sequential(
-                nn.Linear(config['hidden_dim'], 128),
+                nn.Linear(config['hidden_dim']+feature_embedding_len, 128),
                 nn.ReLU(),
                 nn.Linear(128, 3)
             )
         if classifier_layer == 3:
             self.classifier = nn.Sequential(
-                nn.Linear(config['hidden_dim'], 256),
+                nn.Linear(config['hidden_dim']+feature_embedding_len, 256),
                 nn.ReLU(),
                 nn.Linear(256, 128),
                 nn.ReLU(),
@@ -84,7 +86,7 @@ class FakeNet(nn.Module):
             )
         if classifier_layer == 4:
             self.classifier = nn.Sequential(
-                nn.Linear(config['hidden_dim'], 512),
+                nn.Linear(config['hidden_dim']+feature_embedding_len, 512),
                 nn.ReLU(),
                 nn.Linear(512, 256),
                 nn.ReLU(),
@@ -93,7 +95,7 @@ class FakeNet(nn.Module):
                 nn.Linear(128, 3)
             )
 
-    def forward(self, claim_text, evidence_text, claim_qa, evidence_qa):
+    def forward(self, claim_text, evidence_text, claim_qa, evidence_qa, feature):
         # transform to embeddings
         claim_text_embedding = self.claim_text_embedding(claim_text)
         evidence_text_embedding = self.evidence_text_embedding(evidence_text)
@@ -177,10 +179,13 @@ class FakeNet(nn.Module):
         ), dim=-1)
 
         text_qa_embeddings = self.attention_fusion(concat_text_qa_embeddings)
-        # feature_embeddings = self.feature_embedding(add_feature)
+        
+        if feature == None:
+            concat_embeddings = text_qa_embeddings
+        else:
+            feature_embeddings = self.feature_embedding(feature)
+            concat_embeddings = torch.cat((text_qa_embeddings, feature_embeddings), dim=-1)
 
-        # concat_embeddings = torch.cat((text_qa_embeddings, feature_embeddings), dim=-1)
+        predicted_output = self.classifier(concat_embeddings)
 
-        predicted_output = self.classifier(text_qa_embeddings)
-
-        return predicted_output, text_qa_embeddings
+        return predicted_output, concat_embeddings
