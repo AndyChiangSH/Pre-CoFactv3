@@ -64,8 +64,10 @@ class FakeNet(nn.Module):
         feature_embedding_len = config.get("feature_embedding_len", 0)
 
         self.feature_embedding = nn.Sequential(
-            nn.Linear(config["features_num"], feature_embedding_len),
-            nn.ReLU()
+            nn.Linear(config["features_num"], 32),
+            nn.ReLU(),
+            nn.Linear(32, feature_embedding_len),
+            nn.ReLU(),
         )
         
         classifier_layer = config.get("classifier_layer", 2)
@@ -189,3 +191,4 @@ class FakeNet(nn.Module):
         predicted_output = self.classifier(concat_embeddings)
 
         return predicted_output, concat_embeddings
+
