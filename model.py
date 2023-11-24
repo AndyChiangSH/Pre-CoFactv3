@@ -60,13 +60,13 @@ class FakeNet(nn.Module):
             nn.Linear(config['hidden_dim']*16, config['hidden_dim']),
             nn.ReLU(),
         )
-
-        self.feature_embedding = nn.Sequential(
-            nn.Linear(config["features_num"], 32),
-            nn.ReLU()
-        )
         
         feature_embedding_len = config.get("feature_embedding_len", 0)
+
+        self.feature_embedding = nn.Sequential(
+            nn.Linear(config["features_num"], feature_embedding_len),
+            nn.ReLU()
+        )
         
         classifier_layer = config.get("classifier_layer", 2)
         print("classifier_layer:", classifier_layer)
