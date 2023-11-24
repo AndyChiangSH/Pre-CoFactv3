@@ -21,7 +21,7 @@ import json
 from torch.utils.tensorboard import SummaryWriter
 # from transformers import LlamaTokenizer
 
-from model import FakeNet
+from model import FakeNet, FakeNet_2
 
 
 transformers_logger = logging.getLogger("transformers")
@@ -175,7 +175,10 @@ if __name__ == '__main__':
     #         if 'adapter' not in name:
     #             param.requires_grad = False
 
-    fake_net = FakeNet(config)
+    if config["different_classifier"]:
+        fake_net = FakeNet_2(config)
+    else:
+        fake_net = FakeNet(config)
 
     # fake_net.load_state_dict(torch.load('./model/20221201-131212_/10model', map_location=torch.device(f"cuda:{config['device']}")))
     # vit_model.load_state_dict(torch.load('./model/20221201-131212_/10vitmodel', map_location=torch.device(f"cuda:{config['device']}")))
