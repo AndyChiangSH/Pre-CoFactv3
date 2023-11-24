@@ -30,7 +30,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb=32"
 
-labels_dict = {
+label2num = {
     "Support": 0,
     "Neutral": 1,
     "Refute": 2,
@@ -109,9 +109,9 @@ class MultiModalDataset(Dataset):
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
         if config["use_features"]:
-            return (claim, evidence, claim_qas, evidence_qas, labels_dict[label], feature)
+            return (claim, evidence, claim_qas, evidence_qas, label2num[label], feature)
         else:
-            return (claim, evidence, claim_qas, evidence_qas, labels_dict[label])
+            return (claim, evidence, claim_qas, evidence_qas, label2num[label])
 
 
 def save(model, config, epoch=None):

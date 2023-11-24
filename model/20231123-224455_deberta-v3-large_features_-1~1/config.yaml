@@ -3,7 +3,7 @@ best_epoch: 10
 best_val_accurancy: 0.75556
 best_val_avg: 0.754055
 best_val_f1: 0.75255
-device: '1'
+device: '0'
 dropout: 0.1
 epochs: 15
 eval_per_epochs: 1

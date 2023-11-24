@@ -95,7 +95,7 @@ class FakeNet(nn.Module):
                 nn.Linear(128, 3)
             )
 
-    def forward(self, claim_text, evidence_text, claim_qa, evidence_qa, feature):
+    def forward(self, claim_text, evidence_text, claim_qa, evidence_qa, feature=None):
         # transform to embeddings
         claim_text_embedding = self.claim_text_embedding(claim_text)
         evidence_text_embedding = self.evidence_text_embedding(evidence_text)

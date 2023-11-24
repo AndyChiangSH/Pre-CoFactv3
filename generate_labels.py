@@ -67,7 +67,11 @@ class MultiModalDataset(Dataset):
         # with open('../data/processed_{}.pickle'.format(mode), 'rb') as f:
         #     self.data = pickle.load(f)
         
-        data_path = f"./data/{mode}.json"
+        if config["use_features"]:
+            data_path = f"./data/{mode}_{config['use_dataset']}.json"
+        else:
+            data_path = f"./data/{mode}.json"
+
         print(f"Load data from {data_path}...")
         with open(data_path, 'r') as f:
             self.data = json.load(f)
@@ -85,7 +89,9 @@ class MultiModalDataset(Dataset):
         # print("self.data[idx].values:", self.data[idx].values)
         # claim_texts, claim_image, document_text, document_image, category, claim_ocr, document_ocr, add_feature = self.data[idx]
         id, claim_id, claim, evidence, questions, claim_answers, evidence_answers, label = self.data[idx]["id"], self.data[idx]["claim_id"], self.data[idx]["claim"], self.data[idx]["evidence"], self.data[idx]["question"], self.data[idx]["claim_answer"], self.data[idx]["evidence_answer"], self.data[idx]["label"]
-        
+        if config["use_features"]:
+            feature = torch.Tensor(self.data[idx]["feature"])
+
         # truncate claim and evidence to max_len
         try:
             if len(claim) > config["max_len"]:
@@ -107,7 +113,10 @@ class MultiModalDataset(Dataset):
                 evidence_qas += self.sep_token + str(questions[i]) + self.sep_token + str(evidence_answers[i])
 
         # return (claim_texts, claim_image, document_text, document_image, torch.tensor(category), claim_ocr, document_ocr, add_feature)
-        return (claim, evidence, claim_qas, evidence_qas, label2num[label])
+        if config["use_features"]:
+            return (claim, evidence, claim_qas, evidence_qas, label2num[label], feature)
+        else:
+            return (claim, evidence, claim_qas, evidence_qas, label2num[label])
 
 
 def save(model, config, epoch=None):
@@ -213,7 +222,9 @@ if __name__ == '__main__':
         for loader_idx, item in tqdm(enumerate(dataloader), total=len(dataloader), desc='Step: '):
             # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
             claim_texts, evidence_texts, claim_qas, evidence_qas, labels = item[0], item[1], item[2], item[3], item[4].clone().detach().to(device)
-            
+            if config["use_features"]:
+                features = item[5].to(device)
+
             # transform sentences to embeddings via DeBERTa
             input_claim_texts = text_tokenizer(claim_texts, truncation=True, padding=True, return_tensors="pt", max_length=config['max_sequence_length']).to(text_model_device)
             output_claim_texts = text_model(**input_claim_texts).last_hidden_state.to(device)
@@ -244,8 +255,13 @@ if __name__ == '__main__':
             #         input_evidence_qas.input_ids)
             # ).last_hidden_state.to(device)
 
-            predicted_output, concat_embeddings = fake_net(output_claim_texts, output_evidence_texts, output_claim_qas, output_evidence_qas)
-                                
+            if config["use_features"]:
+                predicted_output, concat_embeddings = fake_net(
+                    output_claim_texts, output_evidence_texts, output_claim_qas, output_evidence_qas, features)
+            else:
+                predicted_output, concat_embeddings = fake_net(
+                    output_claim_texts, output_evidence_texts, output_claim_qas, output_evidence_qas)
+
             _, predicted_labels = torch.topk(predicted_output, 1)
 
             if len(y_pred) == 0:
