@@ -38,6 +38,10 @@ def preprocess_data(data):
             evidence = claim[:config["evidence_max_len"]]
 
         text = claim + " " + tokenizer.sep_token + " " + evidence
+        
+        for j in range(len(data[i]["question"])):
+            pass
+        
         label = label2num[data[i]["label"]]
 
         preprocess_data.append({
