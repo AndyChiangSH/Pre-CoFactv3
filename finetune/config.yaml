@@ -2,6 +2,6 @@ model: "microsoft/deberta-v3-large"
 finetune_model: "deberta-v3-large_text"
 epoch: 2
 learning_rate: 0.00002
-batch_size: 16
+batch_size: 4
 claim_max_len: 128
 evidence_max_len: 1024

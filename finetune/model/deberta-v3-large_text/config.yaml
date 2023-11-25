@@ -1,4 +1,4 @@
-batch_size: 16
+batch_size: 4
 claim_max_len: 128
 epoch: 2
 evidence_max_len: 1024
