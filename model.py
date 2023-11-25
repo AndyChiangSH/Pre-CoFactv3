@@ -213,25 +213,37 @@ class FakeNet_2(nn.Module):
         self.classifier_weight = config["classifier_weight"]
 
         self.claim_text_embedding = nn.Sequential(
-            nn.Linear(config['text_dim'], config['hidden_dim']),
-            # Mish()
-            nn.ReLU()
+            # nn.Linear(config['text_dim'], config['hidden_dim']),
+            # nn.ReLU(),
+            nn.Linear(config['text_dim'], 512),
+            nn.ReLU(),
+            nn.Linear(512, config['hidden_dim']),
+            nn.ReLU(),
         )
         self.evidence_text_embedding = nn.Sequential(
-            nn.Linear(config['text_dim'], config['hidden_dim']),
-            # Mish()
-            nn.ReLU()
+            # nn.Linear(config['text_dim'], config['hidden_dim']),
+            # nn.ReLU(),
+            nn.Linear(config['text_dim'], 512),
+            nn.ReLU(),
+            nn.Linear(512, config['hidden_dim']),
+            nn.ReLU(),
         )
 
         self.claim_qa_embedding = nn.Sequential(
-            nn.Linear(config['qa_dim'], config['hidden_dim']),
-            # Mish()
-            nn.ReLU()
+            # nn.Linear(config['qa_dim'], config['hidden_dim']),
+            # nn.ReLU(),
+            nn.Linear(config['qa_dim'], 512),
+            nn.ReLU(),
+            nn.Linear(512, config['hidden_dim']),
+            nn.ReLU(),
         )
         self.evidence_qa_embedding = nn.Sequential(
-            nn.Linear(config['qa_dim'], config['hidden_dim']),
-            # Mish()
-            nn.ReLU()
+            # nn.Linear(config['qa_dim'], config['hidden_dim']),
+            # nn.ReLU(),
+            nn.Linear(config['qa_dim'], 512),
+            nn.ReLU(),
+            nn.Linear(512, config['hidden_dim']),
+            nn.ReLU(),
         )
 
         self.claim_evidence_text_attention = MultiHeadAttention(
@@ -265,13 +277,17 @@ class FakeNet_2(nn.Module):
             config['hidden_dim'], config['hidden_dim']*2, dropout=config['dropout'])
 
         self.text_qa_embedding = nn.Sequential(
-            nn.Linear(config['hidden_dim']*16, config['hidden_dim']),
+            nn.Linear(config['hidden_dim']*16, config['hidden_dim']*8),
+            nn.ReLU(),
+            nn.Linear(config['hidden_dim']*8, config['hidden_dim']),
             nn.ReLU(),
         )
 
         feature_embedding_len = config.get("feature_embedding_len", 0)
         self.feature_embedding = nn.Sequential(
-            nn.Linear(config["features_num"], feature_embedding_len),
+            nn.Linear(config["features_num"], 32),
+            nn.ReLU(),
+            nn.Linear(32, feature_embedding_len),
             nn.ReLU(),
         )
 
@@ -282,9 +298,9 @@ class FakeNet_2(nn.Module):
         )
 
         self.feature_classifier = nn.Sequential(
-            nn.Linear(feature_embedding_len, 16),
+            nn.Linear(feature_embedding_len, 128),
             nn.ReLU(),
-            nn.Linear(16, 3)
+            nn.Linear(128, 3)
         )
 
     def forward(self, claim_text, evidence_text, claim_qa, evidence_qa, feature=None):
