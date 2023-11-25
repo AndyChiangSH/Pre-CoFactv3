@@ -60,10 +60,10 @@ class FakeNet(nn.Module):
         self.claim_evidence_qa_text_attention = MultiHeadAttention(config['head'], config['hidden_dim'], config['hidden_dim'], config['hidden_dim'], dropout=config['dropout'])
         self.claim_evidence_qa_text_pos_ffn = PositionwiseFeedForward(config['hidden_dim'], config['hidden_dim']*2, dropout=config['dropout'])
 
-        # self.attention_fusion = nn.Sequential(
-        #     nn.Linear(config['hidden_dim']*16, config['hidden_dim']),
-        #     nn.ReLU(),
-        # )
+        self.attention_fusion = nn.Sequential(
+            nn.Linear(config['hidden_dim']*16, config['hidden_dim']),
+            nn.ReLU(),
+        )
         
         feature_embedding_len = config.get("feature_embedding_len", 0)
 
@@ -78,9 +78,9 @@ class FakeNet(nn.Module):
         print("classifier_layer:", classifier_layer)
         if classifier_layer == 2:
             self.classifier = nn.Sequential(
-                nn.Linear(config['hidden_dim']*16+feature_embedding_len, 2048),
+                nn.Linear(config['hidden_dim']+feature_embedding_len, 128),
                 nn.ReLU(),
-                nn.Linear(2048, 3)
+                nn.Linear(128, 3)
             )
         if classifier_layer == 3:
             self.classifier = nn.Sequential(
@@ -184,8 +184,8 @@ class FakeNet(nn.Module):
             evidence_text_claim_qa
         ), dim=-1)
 
-        # text_qa_embeddings = self.attention_fusion(concat_text_qa_embeddings)
-        text_qa_embeddings = concat_text_qa_embeddings
+        text_qa_embeddings = self.attention_fusion(concat_text_qa_embeddings)
+        # text_qa_embeddings = concat_text_qa_embeddings
         
         if feature == None:
             concat_embeddings = text_qa_embeddings
