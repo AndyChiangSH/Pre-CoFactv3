@@ -1,0 +1,7 @@
+batch_size: 16
+claim_max_len: 128
+epoch: 2
+evidence_max_len: 1024
+finetune_model: deberta-v3-large_text
+learning_rate: 2.0e-05
+model: microsoft/deberta-v3-large
