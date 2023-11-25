@@ -17,29 +17,37 @@ class FakeNet(nn.Module):
         super().__init__()
 
         self.claim_text_embedding = nn.Sequential(
-            nn.Linear(config['text_dim'], 512),
+            nn.Linear(config['text_dim'], config['hidden_dim']),
             nn.ReLU(),
-            nn.Linear(512, config['hidden_dim']),
-            nn.ReLU(),
+            # nn.Linear(config['text_dim'], 512),
+            # nn.ReLU(),
+            # nn.Linear(512, config['hidden_dim']),
+            # nn.ReLU(),
         )
         self.evidence_text_embedding = nn.Sequential(
-            nn.Linear(config['text_dim'], 512),
+            nn.Linear(config['text_dim'], config['hidden_dim']),
             nn.ReLU(),
-            nn.Linear(512, config['hidden_dim']),
-            nn.ReLU(),
+            # nn.Linear(config['text_dim'], 512),
+            # nn.ReLU(),
+            # nn.Linear(512, config['hidden_dim']),
+            # nn.ReLU(),
         )
         
         self.claim_qa_embedding = nn.Sequential(
-            nn.Linear(config['qa_dim'], 512),
+            nn.Linear(config['qa_dim'], config['hidden_dim']),
             nn.ReLU(),
-            nn.Linear(512, config['hidden_dim']),
-            nn.ReLU(),
+            # nn.Linear(config['qa_dim'], 512),
+            # nn.ReLU(),
+            # nn.Linear(512, config['hidden_dim']),
+            # nn.ReLU(),
         )
         self.evidence_qa_embedding = nn.Sequential(
-            nn.Linear(config['qa_dim'], 512),
+            nn.Linear(config['qa_dim'], config['hidden_dim']),
             nn.ReLU(),
-            nn.Linear(512, config['hidden_dim']),
-            nn.ReLU(),
+            # nn.Linear(config['qa_dim'], 512),
+            # nn.ReLU(),
+            # nn.Linear(512, config['hidden_dim']),
+            # nn.ReLU(),
         )
 
         self.claim_evidence_text_attention = MultiHeadAttention(config['head'], config['hidden_dim'], config['hidden_dim'], config['hidden_dim'], dropout=config['dropout'])
