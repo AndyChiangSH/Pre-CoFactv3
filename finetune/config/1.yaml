@@ -1,0 +1,9 @@
+model: "microsoft/deberta-v3-large"
+finetune_model: "deberta-v3-large_text_1"
+epoch: 8
+learning_rate: 0.00002
+batch_size: 4
+max_token: 650
+claim_max_len: 100
+evidence_max_len: 1000
+add_qa: False

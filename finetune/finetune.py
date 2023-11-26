@@ -24,23 +24,56 @@ num2label = {
 }
 
 
+def get_argument():
+    opt = argparse.ArgumentParser()
+    opt.add_argument("--id",
+                     type=str,
+                     help="id")
+    args = vars(opt.parse_args())
+    
+    return args
+
+
 def preprocess_data(data):
+    sep_token = " " + tokenizer.sep_token + " "
+    
     preprocess_data = []
     
     for i in tqdm(range(len(data))):
         claim = data[i]["claim"]
         evidence = data[i]["evidence"]
+        questions = data[i]["question"]
+        claim_answers = data[i]["claim_answer"]
+        evidence_answers = data[i]["evidence_answer"]
         
         if len(claim) > config["claim_max_len"]:
             claim = claim[:config["claim_max_len"]]
-
+            
         if len(evidence) > config["evidence_max_len"]:
-            evidence = claim[:config["evidence_max_len"]]
+            evidence = evidence[:config["evidence_max_len"]]
 
-        text = claim + " " + tokenizer.sep_token + " " + evidence
+        text = claim + sep_token + evidence
         
-        for j in range(len(data[i]["question"])):
-            pass
+        if config["add_qa"]:
+            for j in range(len(questions)):
+                try:
+                    question = questions[j]
+                    claim_answer = claim_answers[j]
+                    evidence_answer = evidence_answers[j]
+                    
+                    if len(question) > config["question_max_len"]:
+                        question = question[:config["question_max_len"]]
+
+                    if len(claim_answer) > config["claim_answer_max_len"]:
+                        claim_answer = claim_answer[:config["claim_answer_max_len"]]
+
+                    if len(evidence_answer) > config["evidence_answer_max_len"]:
+                        evidence_answer = evidence_answer[:config["evidence_answer_max_len"]]
+                    
+                    text += sep_token + question + sep_token + \
+                        claim_answer + sep_token + evidence_answer
+                except:
+                    pass
         
         label = label2num[data[i]["label"]]
 
@@ -53,7 +86,7 @@ def preprocess_data(data):
 
 
 def preprocess_function(examples):
-    return tokenizer(examples["text"], padding=True, truncation=True)
+    return tokenizer(examples["text"], padding=True, truncation=True, max_length=config["max_token"])
 
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred
@@ -62,8 +95,10 @@ def compute_metrics(eval_pred):
 
 
 if __name__ == '__main__':
+    args = get_argument()
+
     print("Reading config...")
-    with open("./finetune/config.yaml", "r") as file:
+    with open(f"./finetune/config/{args['id']}.yaml", "r") as file:
         config = yaml.safe_load(file)
         
     print("config:", config)
@@ -105,6 +140,7 @@ if __name__ == '__main__':
     model = AutoModelForSequenceClassification.from_pretrained(
         config["model"], num_labels=3, id2label=num2label, label2id=label2num)
 
+    print("Preprocess data...")
     preprocess_train_data = preprocess_data(train_data)
     preprocess_val_data = preprocess_data(val_data)
     
@@ -149,3 +185,6 @@ if __name__ == '__main__':
     )
 
     trainer.train()
+    
+    trainer.save_model(output_folder_path)
+    # trainer.save_metrics()
