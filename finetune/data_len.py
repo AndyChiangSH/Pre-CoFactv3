@@ -18,6 +18,7 @@ for i in range(len(data)):
     claim_lens.append(len(data[i]["claim"]))
     evidence_lens.append(len(data[i]["evidence"]))
     question_nums.append(len(data[i]["question"]))
+    
     for j in range(len(data[i]["question"])):
         try:
             question_lens.append(len(data[i]["question"][j]))
@@ -25,7 +26,6 @@ for i in range(len(data)):
             evidence_answer_lens.append(len(data[i]["evidence_answer"][j]))
         except:
             pass
-
 
 claim_lens_avg = sum(claim_lens) / len(claim_lens)
 evidence_lens_avg = sum(evidence_lens) / len(evidence_lens)
@@ -41,3 +41,8 @@ print("question_lens_avg:", question_lens_avg)
 print("claim_answer_lens_avg:", claim_answer_lens_avg)
 print("evidence_answer_lens_avg:", evidence_answer_lens_avg)
 print("question_nums_avg:", question_nums_avg)
+print("claim_max_len:", max(claim_lens))
+print("evidence_max_len:", max(evidence_lens))
+print("question_max_len:", max(question_lens))
+print("claim_answer_max_len:", max(claim_answer_lens))
+print("evidence_answer_max_len:", max(evidence_answer_lens))
