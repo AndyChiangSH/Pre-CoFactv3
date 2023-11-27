@@ -1,9 +1,9 @@
-mode: "train"
-model: ""
+mode: "val"
+model: "finetune/microsoft/deberta-v3-large"
 finetune_model: ""
 device: "cuda:0"
 epoch: 3
-batch_size: 1
+batch_size: 4
 max_len: 3200
 is_finetune_model: True
-max_order: 4
+max_order: 1
