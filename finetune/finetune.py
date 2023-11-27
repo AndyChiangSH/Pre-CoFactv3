@@ -61,17 +61,20 @@ def preprocess_data(data):
                     claim_answer = claim_answers[j]
                     evidence_answer = evidence_answers[j]
                     
-                    if len(question) > config["question_max_len"]:
-                        question = question[:config["question_max_len"]]
+                    if config["add_q"]:
+                        if len(question) > config["question_max_len"]:
+                            question = question[:config["question_max_len"]]
 
-                    if len(claim_answer) > config["claim_answer_max_len"]:
-                        claim_answer = claim_answer[:config["claim_answer_max_len"]]
+                        text += sep_token + question
+                        
+                    if config["add_a"]:
+                        if len(claim_answer) > config["claim_answer_max_len"]:
+                            claim_answer = claim_answer[:config["claim_answer_max_len"]]
 
-                    if len(evidence_answer) > config["evidence_answer_max_len"]:
-                        evidence_answer = evidence_answer[:config["evidence_answer_max_len"]]
-                    
-                    text += sep_token + question + sep_token + \
-                        claim_answer + sep_token + evidence_answer
+                        if len(evidence_answer) > config["evidence_answer_max_len"]:
+                            evidence_answer = evidence_answer[:config["evidence_answer_max_len"]]
+                        
+                        text += sep_token + claim_answer + sep_token + evidence_answer
                 except:
                     pass
         
@@ -95,6 +98,9 @@ def compute_metrics(eval_pred):
 
 
 if __name__ == '__main__':
+    # clean GPU memory
+    torch.cuda.empty_cache()
+
     args = get_argument()
 
     print("Reading config...")
@@ -187,4 +193,3 @@ if __name__ == '__main__':
     trainer.train()
     
     trainer.save_model(output_folder_path)
-    # trainer.save_metrics()
