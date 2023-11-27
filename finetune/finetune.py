@@ -46,13 +46,16 @@ def preprocess_data(data):
         claim_answers = data[i]["claim_answer"]
         evidence_answers = data[i]["evidence_answer"]
         
-        if len(claim) > config["claim_max_len"]:
-            claim = claim[:config["claim_max_len"]]
-            
-        if len(evidence) > config["evidence_max_len"]:
-            evidence = evidence[:config["evidence_max_len"]]
+        text = ""
+        
+        if config["add_text"]:
+            if len(claim) > config["claim_max_len"]:
+                claim = claim[:config["claim_max_len"]]
+                
+            if len(evidence) > config["evidence_max_len"]:
+                evidence = evidence[:config["evidence_max_len"]]
 
-        text = claim + sep_token + evidence
+            text += claim + sep_token + evidence
         
         if config["add_qa"]:
             for j in range(len(questions)):
@@ -90,6 +93,7 @@ def preprocess_data(data):
 
 def preprocess_function(examples):
     return tokenizer(examples["text"], padding=True, truncation=True, max_length=config["max_token"])
+
 
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred

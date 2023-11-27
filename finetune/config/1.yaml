@@ -1,13 +1,14 @@
 model: "microsoft/deberta-v3-large"
-finetune_model: "deberta-v3-large_text_a_3"
+finetune_model: "deberta-v3-large_qa_1"
 epoch: 8
 learning_rate: 0.00002
 batch_size: 4
 max_token: 650
+add_text: False
 claim_max_len: 100
 evidence_max_len: 1000
 add_qa: True
-add_q: False
+add_q: True
 add_a: True
 question_max_len: 100
 claim_answer_max_len: 50
