@@ -17,7 +17,7 @@ loss_weight: 0.7
 lr: 5.0e-05
 max_len: 3200
 max_sequence_length: 512
-output_folder_name: ./model/20231124-165837_deberta-v3-large_features_-1~1_cl-2/
+output_folder_name: ./model/20231124-165837_deberta-v3-large_features_-1~1_fl-2/
 pretrained_text: microsoft/deberta-v3-large
 qa_dim: 1024
 seed_value: 42

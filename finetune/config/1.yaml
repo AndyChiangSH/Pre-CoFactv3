@@ -1,6 +1,6 @@
 model: "microsoft/deberta-v3-large"
 finetune_model: "deberta-v3-large_text_11"
-epoch: 10
+epoch: 12
 learning_rate: 0.00001
 batch_size: 4
 max_token: 650

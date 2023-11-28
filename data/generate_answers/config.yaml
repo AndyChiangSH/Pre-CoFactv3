@@ -1,9 +1,9 @@
-mode: "test"
-model: "finetune/microsoft/deberta-v3-large"
-finetune_model: ""
+mode: "val"
+model: "microsoft/deberta-v3-large"
+finetune_model: "finetune/microsoft/deberta-v3-large_2"
 device: "cuda:0"
-epoch: 3
+epoch: 6
 batch_size: 4
 max_len: 3200
 is_finetune_model: True
-max_order: 1
+max_order: 4

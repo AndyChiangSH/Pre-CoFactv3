@@ -7,6 +7,8 @@ from transformers import AutoModelForQuestionAnswering, AutoTokenizer
 from transformers import DefaultDataCollator, TrainingArguments, Trainer
 from datasets import load_dataset
 import argparse
+import evaluate
+import numpy as np
 
 
 def preprocess_function(examples):
@@ -75,6 +77,16 @@ def preprocess_function(examples):
     return inputs
 
 
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+    predictions = np.argmax(predictions, axis=1)
+    
+    print("predictions:", predictions)
+    print("labels:", labels)
+
+    return bleu.compute(predictions=predictions, references=labels)
+
+
 if __name__ == '__main__':
     # input_argument = get_argument()
     # with open(f"./config/{input_argument['config']}", "r") as file:
@@ -100,9 +112,11 @@ if __name__ == '__main__':
 
     # print(f"Data length: {len(val_data)}")
     
+    bleu = evaluate.load("bleu")
+    
     data_files = {
-        "train": "./data/preprocess_train.json",
-        "val": "./data/preprocess_val.json"
+        "train": "data/generate_answers/train_preprocess.json",
+        "val": "data/generate_answers/val_preprocess.json"
     }
     dataset = load_dataset("json", data_files=data_files)
     print("dataset:", dataset)
@@ -126,13 +140,18 @@ if __name__ == '__main__':
     
     training_args = TrainingArguments(
         output_dir=output_folder_path,
-        evaluation_strategy="epoch",
         learning_rate=2e-5,
         per_device_train_batch_size=config["batch_size"],
         per_device_eval_batch_size=config["batch_size"],
         num_train_epochs=config["epoch"],
         weight_decay=0.01,
         push_to_hub=False,
+        evaluation_strategy="steps",
+        save_strategy="steps",
+        eval_steps=1,
+        auto_find_batch_size=True,
+        predict_with_generate=True,
+        # load_best_model_at_end=True,
     )
 
     trainer = Trainer(
@@ -142,6 +161,7 @@ if __name__ == '__main__':
         eval_dataset=tokenized_dataset["val"],
         tokenizer=tokenizer,
         data_collator=data_collator,
+        compute_metrics=compute_metrics,
     )
 
     trainer.train()
