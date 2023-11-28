@@ -25,6 +25,9 @@ def get_argument():
     opt.add_argument("--model",
                      type=str,
                      help="model")
+    opt.add_argument("--checkpoint",
+                     type=str,
+                     help="checkpoint")
     opt.add_argument("--mode",
                      type=str,
                      help="mode")
@@ -110,12 +113,12 @@ if __name__ == '__main__':
         
     print(f"data length: {len(data)}")
     
-    
     device = torch.device(
         args['device'] if torch.cuda.is_available() else "cpu")
     print("device:", device)
         
-    model_path = f"./finetune/model/{args['model']}/checkpoint-9191"
+    model_path = f"./finetune/model/{args['model']}"
+    # model_path = f"./finetune/model/{args['model']}/checkpoint-{args['checkpoint']}"
     print("model_path:", model_path)
     
     model = AutoModelForSequenceClassification.from_pretrained(model_path)

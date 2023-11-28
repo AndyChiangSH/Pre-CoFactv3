@@ -1,4 +1,4 @@
-mode: "val"
+mode: "test"
 model: "finetune/microsoft/deberta-v3-large"
 finetune_model: ""
 device: "cuda:0"

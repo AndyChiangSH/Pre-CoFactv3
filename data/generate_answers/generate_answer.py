@@ -41,8 +41,11 @@ if __name__ == '__main__':
             "question": data[i]["question"],
             "claim_answer": [],
             "evidence_answer": [],
-            "label": data[i]["label"],
+            # "label": data[i]["label"],
         }
+        
+        if config["mode"] != "test":
+            obj["label"] = data[i]["label"]
         
         claim = data[i]["claim"]
         if len(claim) > config["max_len"]:
