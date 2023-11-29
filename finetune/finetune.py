@@ -47,16 +47,7 @@ def preprocess_data(data):
         evidence_answers = data[i]["evidence_answer"]
         
         text = ""
-        
-        if config["add_text"]:
-            if len(claim) > config["claim_max_len"]:
-                claim = claim[:config["claim_max_len"]]
                 
-            if len(evidence) > config["evidence_max_len"]:
-                evidence = evidence[:config["evidence_max_len"]]
-
-            text += claim + sep_token + evidence
-        
         if config["add_qa"]:
             for j in range(len(questions)):
                 try:
@@ -81,6 +72,15 @@ def preprocess_data(data):
                 except:
                     pass
         
+        if config["add_text"]:
+            if len(claim) > config["claim_max_len"]:
+                claim = claim[:config["claim_max_len"]]
+
+            if len(evidence) > config["evidence_max_len"]:
+                evidence = evidence[:config["evidence_max_len"]]
+
+            text += claim + sep_token + evidence
+
         label = label2num[data[i]["label"]]
 
         preprocess_data.append({
