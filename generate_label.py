@@ -269,7 +269,7 @@ if __name__ == '__main__':
             else:
                 y_pred += predicted_labels.cpu().detach().flatten().tolist()
 
-    input_path = f"./data/{input_argument['mode']}.json"
+    input_path = f"./data/{input_argument['mode']}_answers.json"
     print(f"Load data from {input_path}...")
     with open(input_path, 'r') as f:
         new_data = json.load(f)

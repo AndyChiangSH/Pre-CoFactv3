@@ -4,7 +4,7 @@ import torch
 import yaml
 from tqdm import tqdm
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer
-from transformers import DefaultDataCollator, TrainingArguments, Trainer
+from transformers import DefaultDataCollator, TrainingArguments, Trainer, Seq2SeqTrainingArguments
 from datasets import load_dataset
 import argparse
 import evaluate
@@ -81,8 +81,11 @@ def compute_metrics(eval_pred):
     predictions, labels = eval_pred
     predictions = np.argmax(predictions, axis=1)
     
-    print("predictions:", predictions)
-    print("labels:", labels)
+    predictions = tokenizer.batch_decode(predictions)
+    labels = tokenizer.batch_decode(labels)
+    
+    # print("predictions:", predictions)
+    # print("labels:", labels)
 
     return bleu.compute(predictions=predictions, references=labels)
 
@@ -138,19 +141,19 @@ if __name__ == '__main__':
     
     data_collator = DefaultDataCollator()
     
-    training_args = TrainingArguments(
+    training_args = Seq2SeqTrainingArguments(
         output_dir=output_folder_path,
-        learning_rate=2e-5,
+        learning_rate=config["learning_rate"],
         per_device_train_batch_size=config["batch_size"],
         per_device_eval_batch_size=config["batch_size"],
         num_train_epochs=config["epoch"],
         weight_decay=0.01,
         push_to_hub=False,
-        evaluation_strategy="steps",
-        save_strategy="steps",
-        eval_steps=1,
-        auto_find_batch_size=True,
-        predict_with_generate=True,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        # eval_steps=1,
+        # auto_find_batch_size=True,
+        # predict_with_generate=True,
         # load_best_model_at_end=True,
     )
 

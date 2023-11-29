@@ -168,3 +168,4 @@ data/generate_answers/finetune/
 data/generate_answers/train_preprocess.json
 data/generate_answers/val_preprocess.json
 finetune/model
+submission/
