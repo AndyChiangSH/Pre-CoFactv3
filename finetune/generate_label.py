@@ -84,11 +84,11 @@ def preprocess_data(data):
                 except:
                     pass
 
-        label = label2num[data[i]["label"]]
+        # label = label2num[data[i]["label"]]
 
         preprocess_data.append({
             "text": text,
-            "label": label,
+            # "label": label,
         })
 
     return preprocess_data
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     args = get_argument()
 
     print("Reading config...")
-    with open(f"./finetune/model/{args['model']}/config.yaml", "r") as file:
+    with open(f"./finetune/model/{args['model'].split('/')[0]}/config.yaml", "r") as file:
         config = yaml.safe_load(file)
 
     print("config:", config)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
             "evidence_answer": data[i]["evidence_answer"],
         }
         
-        result = classifier(preprocessed_data[i]["text"])
+        result = classifier(preprocessed_data[i]["text"], num_workers=8)
         obj["label"] = result[0]["label"]
             
         new_data.append(obj)
