@@ -108,6 +108,8 @@ class FakeNet(nn.Module):
                 nn.ReLU(),
                 nn.Linear(128, 3)
             )
+            
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, claim_text, evidence_text, claim_qa, evidence_qa, feature=None):
         # transform to embeddings
@@ -202,6 +204,7 @@ class FakeNet(nn.Module):
             concat_embeddings = torch.cat((text_qa_embeddings, feature_embeddings), dim=-1)
 
         predicted_output = self.classifier(concat_embeddings)
+        predicted_output = self.softmax(predicted_output)
 
         return predicted_output, concat_embeddings
 

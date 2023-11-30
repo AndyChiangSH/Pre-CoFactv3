@@ -217,7 +217,7 @@ if __name__ == '__main__':
         
     # testing
     with torch.no_grad():
-        y_pred, y_true = [], []
+        y_pred, y_prob = [], []
         fake_net.eval(), text_model.eval()
         for loader_idx, item in tqdm(enumerate(dataloader), total=len(dataloader), desc='Step: '):
             # claim_texts, claim_image, document_text, document_image, label, claim_ocr, document_ocr, add_feature = list(item[0]), item[1].to(device), list(item[2]), item[3].to(device), item[4].to(device), list(item[5]), list(item[6]), item[7].to(device)
@@ -263,13 +263,13 @@ if __name__ == '__main__':
                     output_claim_texts, output_evidence_texts, output_claim_qas, output_evidence_qas)
 
             _, predicted_labels = torch.topk(predicted_output, 1)
+            
+            # print("predicted_output:", predicted_output)
 
-            if len(y_pred) == 0:
-                y_pred = predicted_labels.cpu().detach().flatten().tolist()
-            else:
-                y_pred += predicted_labels.cpu().detach().flatten().tolist()
+            y_pred += predicted_labels.cpu().detach().flatten().tolist()
+            y_prob += predicted_output.cpu().detach().tolist()
 
-    input_path = f"./data/{input_argument['mode']}_answers.json"
+    input_path = f"./data/{input_argument['mode']}.json"
     print(f"Load data from {input_path}...")
     with open(input_path, 'r') as f:
         new_data = json.load(f)
@@ -285,3 +285,9 @@ if __name__ == '__main__':
     print(f"Save data to {output_path}...")
     with open(output_path, 'w') as f:
         json.dump(new_data, f, indent=2)
+
+    # print("y_prob:", y_prob)
+    output_path = f"{output_folder_path}/{input_argument['mode']}_prob.json"
+    print(f"Save data to {output_path}...")
+    with open(output_path, 'w') as f:
+        json.dump(y_prob, f, indent=2)
