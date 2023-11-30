@@ -130,6 +130,7 @@ if __name__ == '__main__':
     preprocessed_data = preprocess_data(data)
     
     new_data = []
+    new_prob = []
       
     for i in tqdm(range(len(data))):
         obj = {
@@ -142,10 +143,19 @@ if __name__ == '__main__':
             "evidence_answer": data[i]["evidence_answer"],
         }
         
-        result = classifier(preprocessed_data[i]["text"], num_workers=8)
+        result = classifier(
+            preprocessed_data[i]["text"], num_workers=8, top_k=3)
+        # print("result:", result)
+        
         obj["label"] = result[0]["label"]
+        
+        prob = [0, 0, 0]
+        for r in result:
+            prob[label2num[r["label"]]] = r["score"]
+        # print("prob:", prob)
             
         new_data.append(obj)
+        new_prob.append(prob)
                 
     output_folder_path = f"./finetune/label/{args['model']}"
     if not os.path.exists(output_folder_path):
@@ -155,3 +165,9 @@ if __name__ == '__main__':
     print(f"Save data to {output_data_path}...")
     with open(output_data_path, 'w') as f:
         json.dump(new_data, f, indent=2)
+        
+    # print("new_prob:", new_prob)
+    output_path = f"{output_folder_path}/{args['mode']}_prob.json"
+    print(f"Save data to {output_path}...")
+    with open(output_path, 'w') as f:
+        json.dump(new_prob, f, indent=2)

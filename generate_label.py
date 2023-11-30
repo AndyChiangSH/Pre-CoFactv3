@@ -143,9 +143,11 @@ def save(model, config, epoch=None):
 
 if __name__ == '__main__':
     input_argument = get_argument()
-    model_path = f"./model/{input_argument['model']}"
+    model_path = f"model/{input_argument['model']}"
     with open(f"{model_path}/config.yaml", "r") as file:
         config = yaml.safe_load(file)
+        
+    print("config:", config)
 
     # config['output_folder_name'] = input_argument['output_folder_name']
     set_seed(config['seed_value'])
