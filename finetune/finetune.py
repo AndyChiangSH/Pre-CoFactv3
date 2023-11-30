@@ -35,7 +35,7 @@ def get_argument():
 
 
 def preprocess_data(data):
-    sep_token = " " + tokenizer.sep_token + " "
+    sep_token = " " + tokenizer.pad_token + " "
     
     preprocess_data = []
     
@@ -182,6 +182,7 @@ if __name__ == '__main__':
         save_strategy="epoch",
         load_best_model_at_end=True,
         push_to_hub=False,
+        # auto_find_batch_size=True,
     )
 
     trainer = Trainer(

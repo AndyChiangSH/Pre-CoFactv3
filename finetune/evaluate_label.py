@@ -51,8 +51,8 @@ if __name__ == '__main__':
         # ref_labels.append(label2num[ref_data[i]["label"]])
         # pred_labels.append(label2num[pred_data[i]["label"]])
 
-        ref_labels.append(ref_data[i]["label"])
-        pred_labels.append(pred_data[i]["label"])
+        ref_labels.append(label2num[ref_data[i]["label"]])
+        pred_labels.append(label2num[pred_data[i]["label"]])
         
         # if i == 5:
         #     break
