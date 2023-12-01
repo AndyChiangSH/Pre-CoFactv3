@@ -166,5 +166,5 @@ model/20231111-195957_deberta-large_cl-4/model*
 model/20231114-204136_deberta-large_big/model*
 generate_answer/model/
 generate_answer/data/
-finetune/model
+generate_label/finetune/model/
 submission/
