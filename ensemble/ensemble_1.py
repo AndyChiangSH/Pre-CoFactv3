@@ -114,7 +114,7 @@ if __name__ == '__main__':
         "best_cm": best_cm.tolist(),
     }
     
-    output_folder_path = f"ensemble/ensemble/{args['model_1']}+{args['model_2']}"
+    output_folder_path = f"ensemble/ensemble_1/{args['model_1']}+{args['model_2']}"
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
