@@ -6,7 +6,7 @@ from tqdm import tqdm
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 
 if __name__ == '__main__':
-    with open("./data/generate_answers/config.yaml", "r") as file:
+    with open("./generate_answer/config.yaml", "r") as file:
         config = yaml.safe_load(file)
         
     load_data_path = f"./data/{config['mode']}.json"
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     print("device:", device)
     
     if config["is_finetune_model"]:
-        model_path = f"./data/generate_answers/{config['model']}"
+        model_path = f"./generate_answer/model/{config['model']}"
     else:
         model_path = config['model']
         
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         # if i == 300:
         #     break
         
-    output_folder_path = f"./data/generate_answers/answer/{config['model']}"
+    output_folder_path = f"./generate_answer/answer/{config['model']}"
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 

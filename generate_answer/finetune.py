@@ -96,7 +96,7 @@ if __name__ == '__main__':
     #     config = yaml.safe_load(file)
     # print("config:", config)
     
-    with open("./data/generate_answers/config.yaml", "r") as file:
+    with open("./generate_answer/config.yaml", "r") as file:
         config = yaml.safe_load(file)
     
     # load_data_path = f"./data/preprocess_train.json"
@@ -118,8 +118,8 @@ if __name__ == '__main__':
     bleu = evaluate.load("bleu")
     
     data_files = {
-        "train": "data/generate_answers/train_preprocess.json",
-        "val": "data/generate_answers/val_preprocess.json"
+        "train": "generate_answer/data/train_preprocess.json",
+        "val": "generate_answer/data/val_preprocess.json"
     }
     dataset = load_dataset("json", data_files=data_files)
     print("dataset:", dataset)
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         config['device'] if torch.cuda.is_available() else "cpu")
     print("device:", device)
     
-    output_folder_path = f"./data/generate_answers/{config['finetune_model']}"
+    output_folder_path = f"./generate_answer/model/finetune/{config['finetune_model']}"
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 

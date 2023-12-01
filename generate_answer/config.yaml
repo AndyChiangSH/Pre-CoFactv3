@@ -1,5 +1,5 @@
 mode: "val"
-model: "finetune/microsoft/deberta-v3-large_2"
+model: "microsoft/deberta-v3-large"
 finetune_model: "finetune/microsoft/deberta-v3-large_2"
 device: "cuda"
 epoch: 6

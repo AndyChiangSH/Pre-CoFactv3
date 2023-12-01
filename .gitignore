@@ -164,8 +164,7 @@ test.py
 model/20231111-040252_deberta-large_hd-1024/model*
 model/20231111-195957_deberta-large_cl-4/model*
 model/20231114-204136_deberta-large_big/model*
-data/generate_answers/finetune/
-data/generate_answers/train_preprocess.json
-data/generate_answers/val_preprocess.json
+generate_answer/model/
+generate_answer/data/
 finetune/model
 submission/

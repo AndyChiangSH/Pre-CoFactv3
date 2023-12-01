@@ -3,7 +3,7 @@ import yaml
 from tqdm import tqdm
 
 if __name__ == '__main__':
-    with open("./data/generate_answers/config.yaml", "r") as file:
+    with open("./generate_answer/config.yaml", "r") as file:
         config = yaml.safe_load(file)
     print("config:", config)
 
