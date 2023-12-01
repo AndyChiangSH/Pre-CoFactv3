@@ -160,9 +160,9 @@ cython_debug/
 #.idea/
 
 __transformers__/
-test.py
 generate_answer/model/
 generate_answer/data/
 generate_label/fakenet/model/
 generate_label/finetune/model/
 submission/
+test.py
