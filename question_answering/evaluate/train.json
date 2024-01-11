@@ -1,0 +1,32 @@
+{
+  "claim_result": {
+    "bleu": 1.0,
+    "precisions": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "brevity_penalty": 1.0,
+    "length_ratio": 1.0,
+    "translation_length": 158326,
+    "reference_length": 158326
+  },
+  "evidence_result": {
+    "bleu": 1.0,
+    "precisions": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "brevity_penalty": 1.0,
+    "length_ratio": 1.0,
+    "translation_length": 145319,
+    "reference_length": 145319
+  },
+  "avg_bleu": 1.0,
+  "claim_avg_bleu": 0.7480952380952381,
+  "evidence_avg_bleu": 0.5823809523809523,
+  "avg_avg_bleu": 0.6652380952380952
+}

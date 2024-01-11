@@ -160,9 +160,7 @@ cython_debug/
 #.idea/
 
 __transformers__/
-generate_answer/model/
-generate_answer/data/
-generate_label/fakenet/model/
-generate_label/finetune/model/
-submission/
-test.py
+question_answering/model/
+question_answering/data/
+text_classification/fakenet/model/
+text_classification/finetune/model/
