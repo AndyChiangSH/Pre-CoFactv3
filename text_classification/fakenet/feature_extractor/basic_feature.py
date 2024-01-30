@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     # read data
     inFile = './data/train.json'
-    outFile = './data/train_features_-1-1.json'
+    outFile = './data/train_features_-1to1.json'
 
     f = open(inFile)
     input = json.load(f)
@@ -46,8 +46,13 @@ if __name__ == "__main__":
             print(f"Processing batch for similarity features {int(i / 100)} of {int(len(res) / 100)}")
         
         # for the text message 
-        data[i]['simcse_text'],  data[i]['mpneet_text'],  data[i]['fuzz_text'],  data[i]['tfidf_text'],  data[i]['rouge_text'] = get_scores(data[i]['claim'], data[i]['evidence'])
-        
+        simcse_text, mpnet_text, fuzz_text, tfidf_text, rouge_text = get_scores(data[i]['claim'], data[i]['evidence'])
+        res[i]['feature'].append(simcse_text)
+        res[i]['feature'].append(mpnet_text)
+        res[i]['feature'].append(fuzz_text)
+        res[i]['feature'].append(tfidf_text)
+        res[i]['feature'].append(rouge_text)
+
         # for the ans message
         simcse_ans, mpnet_ans, fuzz_ans, tfidf_ans, rouge_ans, count = 0, 0, 0, 0, 0, 0
         lenofans = len(data[i]['claim_answer'])
@@ -64,10 +69,15 @@ if __name__ == "__main__":
             rouge_ans += e
 
         if count == 0:
-            data[i]['simcse_ans'],  data[i]['mpneet_ans'],  data[i]['fuzz_ans'],  data[i]['tfidf_ans'],  data[i]['rouge_ans'] = 0, 0, 0, 0, 0
+             simcse_ans, mpnet_ans, fuzz_ans, tfidf_ans, rouge_ans = 0, 0, 0, 0, 0
         else:
-            data[i]['simcse_ans'],  data[i]['mpneet_ans'],  data[i]['fuzz_ans'],  data[i]['tfidf_ans'],  data[i]['rouge_ans'] = simcse_ans /count, mpnet_ans/count, fuzz_ans /count, tfidf_ans/count, rouge_ans/count
-    
-    res = data
+             simcse_ans, mpnet_ans, fuzz_ans, tfidf_ans, rouge_ans = simcse_ans/count, mpnet_ans/count, fuzz_ans /count, tfidf_ans/count, rouge_ans/count
+        
+        res[i]['feature'].append(simcse_ans)
+        res[i]['feature'].append(mpnet_ans)
+        res[i]['feature'].append(fuzz_ans)
+        res[i]['feature'].append(tfidf_ans)
+        res[i]['feature'].append(rouge_ans)
+
     with open(outFile, 'w') as f:
         json.dump(res, f, indent = 2)

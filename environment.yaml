@@ -49,49 +49,70 @@ dependencies:
   - python=3.8.15=h3fd9d12_0
   - python_abi=3.8=2_cp38
   - pytorch-mutex=1.0=cuda
-  - readline=8.2=h5eee18b_0conda env export -n <env-name> > environment.yml
+  - readline=8.2=h5eee18b_0
   - six=1.16.0=pyh6c4a22f_0
   - sqlite=3.39.3=h5082296_0
   - tk=8.6.12=h1ccaba5_0
   - torchaudio=0.10.1=py38_cu113
   - torchvision=0.11.2=py38_cu113
-  - typing_extensions=4.4.0=pyha770c72_0conda env export -n <env-name> > environment.yml
+  - typing_extensions=4.4.0=pyha770c72_0
+  - wheel=0.37.1=pyhd8ed1ab_0
+  - xz=5.2.6=h5eee18b_0
+  - zlib=1.2.13=h5eee18b_0
   - zstd=1.5.0=ha95c52a_0
   - pip:
       - absl-py==2.0.0
       - accelerate==0.24.1
       - aiohttp==3.8.6
       - aiosignal==1.3.1
+      - analytics-python==1.4.post1
       - async-timeout==4.0.3
       - attrs==23.1.0
+      - backoff==1.10.0
+      - bcrypt==4.1.2
+      - beautifulsoup4==4.12.3
       - bitsandbytes==0.41.2.post2
+      - blinker==1.7.0
       - cachetools==5.3.2
+      - cffi==1.16.0
       - charset-normalizer==2.1.1
+      - click==8.1.7
       - contourpy==1.1.1
+      - cryptography==42.0.1
       - cycler==0.12.1
       - datasets==2.14.7
       - dill==0.3.7
       - docstring-parser==0.15
       - evaluate==0.4.1
+      - ffmpy==0.3.1
       - filelock==3.8.0
+      - flask==3.0.1
+      - flask-cachebuster==1.0.0
+      - flask-cors==4.0.0
+      - flask-login==0.6.3
       - fonttools==4.44.3
       - frozenlist==1.4.0
       - fsspec==2023.10.0
       - google-auth==2.23.3
       - google-auth-oauthlib==1.0.0
+      - gradio==2.6.2
       - grpcio==1.59.2
       - huggingface-hub==0.17.3
       - idna==3.4
       - importlib-metadata==6.8.0
       - importlib-resources==6.1.1
+      - itsdangerous==2.1.2
       - jinja2==3.1.2
       - joblib==1.2.0
       - kiwisolver==1.4.5
+      - levenshtein==0.23.0
       - markdown==3.5
       - markdown-it-py==3.0.0
+      - markdown2==2.4.12
       - markupsafe==2.1.3
       - matplotlib==3.7.3
       - mdurl==0.1.2
+      - monotonic==1.6
       - mpmath==1.3.0
       - multidict==6.0.4
       - multiprocess==0.70.15
@@ -115,6 +136,7 @@ dependencies:
       - oauthlib==3.2.2
       - packaging==21.3
       - pandas==1.5.1
+      - paramiko==3.4.0
       - peft==0.6.2
       - pillow==9.3.0
       - protobuf==3.20.0
@@ -123,12 +145,18 @@ dependencies:
       - pyarrow-hotfix==0.5
       - pyasn1==0.5.0
       - pyasn1-modules==0.3.0
+      - pycparser==2.21
+      - pycryptodome==3.20.0
+      - pydub==0.25.1
       - pygments==2.17.2
+      - pynacl==1.5.0
       - pyparsing==3.0.9
       - python-dateutil==2.8.2
+      - python-levenshtein==0.23.0
       - pytorch-metric-learning==2.3.0
       - pytz==2022.6
       - pyyaml==6.0
+      - rapidfuzz==3.6.1
       - regex==2022.10.31
       - requests==2.28.1
       - requests-oauthlib==1.3.1
@@ -141,9 +169,11 @@ dependencies:
       - sentencepiece==0.1.97
       - setuptools==59.5.0
       - shtab==1.6.4
+      - soupsieve==2.5
       - sympy==1.12
       - tensorboard==2.14.0
       - tensorboard-data-server==0.7.2
+      - thefuzz==0.22.1
       - threadpoolctl==3.1.0
       - tokenizers==0.14.1
       - torch==2.1.1
@@ -155,6 +185,7 @@ dependencies:
       - tyro==0.5.18
       - urllib3==1.26.12
       - werkzeug==3.0.1
+      - wikipedia==1.4.0
       - xxhash==3.4.1
       - yarl==1.9.2
       - zipp==3.17.0
