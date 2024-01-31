@@ -29,7 +29,10 @@ A multimodality clssification task, where the goal is to detect support, insuffi
 </div>
 
 - For more details, please refer to [FACTIFY: A Multi-Modal Fact Verification Dataset](https://www.researchgate.net/publication/356342935_FACTIFY_A_Multi-Modal_Fact_Verification_Dataset).
-
+- For data preprocessing, please refer to the file located in /text_classification/fakenet/feature_extractor
+    ```
+    python feature_extraction.py
+    ```
 ## Metric
 F1 averaged across the 5 categories. The final ranking would be based on the weighted average F1 score.
 
