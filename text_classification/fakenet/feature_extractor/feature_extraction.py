@@ -6,6 +6,7 @@ from similarity import get_scores
 if __name__ == "__main__":
 
     # read data
+    # Please download the data and put the file under the data directory, the output file contains 55 basic features and 10 similarity features which are normalized from -1 to 1.
     inFile = './data/train.json'
     outFile = './data/train_features_-1to1.json'
 
