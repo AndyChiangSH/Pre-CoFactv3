@@ -1,4 +1,4 @@
-from feature import addFeature
+from basic_feature import addFeature
 import os.path
 import json
 from similarity import get_scores
