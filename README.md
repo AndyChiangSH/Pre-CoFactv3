@@ -1,6 +1,6 @@
 # Pre-CoFactv3
 
-Code for [**AAAI 2024 Workshop**](https://defactify.com/factify3.html) Paper: **“Team Trifecta at Factify5WQA: Setting the Standard in Fact Verification with Fine-Tuning”**
+Code for [**AAAI 2024 Workshop**](https://aaai.org/aaai-conference/aaai-24-workshop-program/) Paper: [**“Team Trifecta at Factify5WQA: Setting the Standard in Fact Verification with Fine-Tuning”**](https://arxiv.org/abs/2403.10281)
 
 In this paper, we present **Pre-CoFactv3**, a comprehensive framework comprised of Question Answering and Text Classification components for fact verification. Leveraging In-Context Learning, Fine-tuned Large Language Models (LLMs), and the FakeNet model, we address the challenges of fact verification. Our experiments explore diverse approaches, comparing different Pre-trained LLMs, introducing FakeNet, and implementing various ensemble methods. Notably, our team, Trifecta, secured **first place** in the **[AAAI-24 Factify 3.0 Workshop](https://defactify.com/factify3.html)**, surpassing the baseline accuracy by 103% and maintaining a 70% lead over the second competitor. This success underscores the efficacy of our approach and its potential contributions to advancing fact verification research.
 
