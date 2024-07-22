@@ -227,7 +227,15 @@ This dataset is designed for fact verification, with the task of determining the
 ## 📌 Citation
 
 ```
-
+@misc{chiang2024teamtrifectafactify5wqasetting,
+      title={Team Trifecta at Factify5WQA: Setting the Standard in Fact Verification with Fine-Tuning}, 
+      author={Shang-Hsuan Chiang and Ming-Chih Lo and Lin-Wei Chao and Wen-Chih Peng},
+      year={2024},
+      eprint={2403.10281},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2403.10281}, 
+}
 ```
 
 ## 😀 Author
